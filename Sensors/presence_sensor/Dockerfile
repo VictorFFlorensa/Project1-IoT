@@ -4,4 +4,5 @@ WORKDIR script
 ADD requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 ADD presence_sensor.py presence_sensor.py
+CMD ["python3","-u", "presence_sensor.py"]
 

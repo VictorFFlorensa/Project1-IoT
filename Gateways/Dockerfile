@@ -3,5 +3,6 @@ RUN mkdir script
 WORKDIR script
 ADD requirements.txt requirements.txt
 RUN pip install -r requirements.txt
-ADD presence_sensor.py presence_sensor.py
+ADD gateway.py gateway.py
+CMD ["python3","-u", "gateway.py"]
 

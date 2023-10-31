@@ -3,5 +3,5 @@ RUN mkdir script
 WORKDIR script
 ADD requirements.txt requirements.txt
 RUN pip install -r requirements.txt
-ADD presence_sensor.py presence_sensor.py
-
+ADD temperature_sensor.py temperature_sensor.py
+CMD ["python3","-u", "temperature_sensor.py"]
