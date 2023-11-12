@@ -4,6 +4,7 @@ from kafka import KafkaProducer
 import paho.mqtt.subscribe as subscribe
 import os
 
+# TODO: Make this clean, not with a sleep but with a while that actively tries
 # Espera 15 segundos para dar tiempo a que Kafka se inicie
 print("Esperando a que Kafka se inicie...")
 sleep(15)
@@ -14,7 +15,7 @@ def on_message_print(client, userdata, message):
     data = message.payload.decode("utf-8")
 
     # Utiliza el tópico MQTT tal como está para el tópico de Kafka
-    kafka_topic = message.topic.replace("/", "_")
+    kafka_topic = "sensor_topic"
     producer.send(kafka_topic, value=data)
     print("Enviado %s %s" % (kafka_topic, data))
 

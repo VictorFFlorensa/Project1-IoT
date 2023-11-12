@@ -3,14 +3,14 @@ services:
   albert_mosquitto:
     image: eclipse-mosquitto:1.6.12
 
-  # dakota_mosquitto:
-  #   image: eclipse-mosquitto:1.6.12
+  # # dakota_mosquitto:
+  # #   image: eclipse-mosquitto:1.6.12
 
-  # tiffany_mosquitto:
-  #   image: eclipse-mosquitto:1.6.12
+  # # tiffany_mosquitto:
+  # #   image: eclipse-mosquitto:1.6.12
 
-  # tommy_mosquitto:
-  #   image: eclipse-mosquitto:1.6.12
+  # # tommy_mosquitto:
+  # #   image: eclipse-mosquitto:1.6.12
 
   zookeeper:
     image: docker.io/bitnami/zookeeper:3.8
@@ -39,15 +39,15 @@ services:
     depends_on:
       - albert_mosquitto
 
-  albert-temp-sensor:
-    build:
-      context: ./Sensors/temp_sensor
-      dockerfile: Dockerfile
-    container_name: albert_temp_sensor
-    environment:
-      - mqtt=albert_mosquitto
-    depends_on:
-      - albert_mosquitto
+  # albert-temp-sensor:
+  #   build:
+  #     context: ./Sensors/temp_sensor
+  #     dockerfile: Dockerfile
+  #   container_name: albert_temp_sensor
+  #   environment:
+  #     - mqtt=albert_mosquitto
+  #   depends_on:
+  #     - albert_mosquitto
 
   albert-gateway:
     build:
@@ -60,13 +60,13 @@ services:
       - kafka
       - albert_mosquitto
       
-  # save-processor:
-  #   build:
-  #     context: ./Kafka/save-processor
-  #     dockerfile: Dockerfile
-  #   container_name: save-processor
-  #   depends_on:
-  #     - kafka
+  save-processor:
+    build:
+      context: ./Kafka/save-processor
+      dockerfile: Dockerfile
+    container_name: save-processor
+    depends_on:
+      - kafka
 
   # dakota-presence-sensor:
   #   build:

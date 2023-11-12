@@ -4,6 +4,8 @@ import os
 import time
 import json
 
+# TODO: Data must be reported ON CHANGE, not necessarily every reading
+
 def presence_sensor():
     return str(random.uniform(-10, 110))
 
@@ -19,13 +21,12 @@ topic = f"{user}/presence_sensor"
 
 while True:
     data = {
-        'presence': presence_sensor(),
-        'timestamp': time.strftime('%Y-%m-%d %H:%M:%S')
+        'value': presence_sensor(),
+        'timestamp': time.strftime('%Y-%m-%d %H:%M:%S'),
+        'source': "presence"
     }
     #Convert the dictionary to a JSON string
     payload = json.dumps(data)
     publish.single(topic, payload, hostname=host)
     print(f"Published {payload} on topic {topic}")
     time.sleep(1)
-                
-

@@ -19,8 +19,9 @@ topic = f"{user}/temperature_sensor"
 
 while True:
     data = {
-        'presence': temperature_sensor(),
-        'timestamp': time.strftime('%Y-%m-%d %H:%M:%S')
+        'value': temperature_sensor(),
+        'timestamp': time.strftime('%Y-%m-%d %H:%M:%S'),
+        'source': "presence"
     }
     #Convert the dictionary to a JSON string
     payload = json.dumps(data)
