@@ -15,11 +15,11 @@ def get_user_name(name):
 host = os.environ.get("mqtt")
 print(f"MQTT Broker Host: {host}")
 user = get_user_name(host)
-topic = f"{user}/temperature_sensor"
+topic = f"{user}/temperature"
 
 while True:
     data = {
-        'presence': temperature_sensor(),
+        'temperature': temperature_sensor(),
         'timestamp': time.strftime('%Y-%m-%d %H:%M:%S')
     }
     #Convert the dictionary to a JSON string

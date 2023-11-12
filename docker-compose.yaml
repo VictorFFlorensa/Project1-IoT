@@ -1,7 +1,7 @@
 version: "3.9"
 services:
-  # albert_mosquitto:
-  #   image: eclipse-mosquitto:1.6.12
+  albert_mosquitto:
+    image: eclipse-mosquitto:1.6.12
 
   # dakota_mosquitto:
   #   image: eclipse-mosquitto:1.6.12
@@ -29,36 +29,36 @@ services:
     depends_on:
       - zookeeper
 
-  # albert-presence-sensor:
-  #   build:
-  #     context: ./Sensors/presence_sensor
-  #     dockerfile: Dockerfile
-  #   container_name: albert_presence_sensor
-  #   environment:
-  #     - mqtt=albert_mosquitto
-  #   depends_on:
-  #     - albert_mosquitto
+  albert-presence-sensor:
+    build:
+      context: ./Sensors/presence_sensor
+      dockerfile: Dockerfile
+    container_name: albert_presence_sensor
+    environment:
+      - mqtt=albert_mosquitto
+    depends_on:
+      - albert_mosquitto
 
-  # albert-temp-sensor:
-  #   build:
-  #     context: ./Sensors/temp_sensor
-  #     dockerfile: Dockerfile
-  #   container_name: albert_temp_sensor
-  #   environment:
-  #     - mqtt=albert_mosquitto
-  #   depends_on:
-  #     - albert_mosquitto
+  albert-temp-sensor:
+    build:
+      context: ./Sensors/temp_sensor
+      dockerfile: Dockerfile
+    container_name: albert_temp_sensor
+    environment:
+      - mqtt=albert_mosquitto
+    depends_on:
+      - albert_mosquitto
 
-  # albert-gateway:
-  #   build:
-  #     context: ./Gateways
-  #     dockerfile: Dockerfile
-  #   container_name: albert_gateway
-  #   environment:
-  #     - mqtt=albert_mosquitto
-  #   depends_on:
-  #     - kafka
-  #     - albert_mosquitto
+  albert-gateway:
+    build:
+      context: ./Gateways
+      dockerfile: Dockerfile
+    container_name: albert_gateway
+    environment:
+      - mqtt=albert_mosquitto
+    depends_on:
+      - kafka
+      - albert_mosquitto
       
   save-processor:
     build:

@@ -15,7 +15,7 @@ def get_user_name(name):
 host = os.environ.get("mqtt")
 print(f"MQTT Broker Host: {host}")
 user = get_user_name(host)
-topic = f"{user}/presence_sensor"
+topic = f"{user}/presence"
 
 while True:
     data = {

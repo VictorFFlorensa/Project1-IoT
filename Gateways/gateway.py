@@ -10,11 +10,10 @@ sleep(10)
 
 producer = KafkaProducer(bootstrap_servers=['kafka:9092'], value_serializer=lambda x: dumps(x).encode('utf-8'))
 
+
 def on_message_print(client, userdata, message):
+    kafka_topic = "raw_" + message.topic.replace("/", "_")
     data = message.payload.decode("utf-8")
-    
-    # Utiliza el tópico MQTT tal como está para el tópico de Kafka
-    kafka_topic = message.topic.replace("/", "_")
     producer.send(kafka_topic, value=data)
     print("Enviado %s %s" % (kafka_topic, data))
 
