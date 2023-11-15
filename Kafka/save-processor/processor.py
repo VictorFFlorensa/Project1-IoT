@@ -3,14 +3,13 @@ from influxdb_client import InfluxDBClient, Point
 from influxdb_client.client.write_api import SYNCHRONOUS
 import json
 from time import sleep
-import asyncio
 
 # Espera 15 segundos para dar tiempo a que Kafka se inicie
 print("Esperando a que Kafka se inicie...")
 sleep(10)
 
-# Lista de tópicos a los que suscribirse (output not working for now)
-topics = ['raw_albert_temperature', 'raw_albert_presence']
+# Lista de tópicos a los que suscribirse (output for multiple topics not working for now)
+topics = ['raw_albert_temperature']
 consumer = KafkaConsumer(*topics, bootstrap_servers='kafka:9092', value_deserializer=json.loads)
 
 # Setup InfluxDB
@@ -24,7 +23,6 @@ write_api = client.write_api(write_options=SYNCHRONOUS)
 
 print("Starting...")
 for message in consumer:
-    # Crear un nuevo punto
     p = Point("IOT_DATA")
 
     # Agregar tags
@@ -33,12 +31,11 @@ for message in consumer:
     p.tag("user", topic_parts[1])
     p.tag("sensor", topic_parts[2])
 
-    # Agregar los datos de temperatura o presencia y el timeStamp
+    # Convertir a JSON
     payload = json.loads(message.value)
 
-    # Usar un sufijo en el campo "value" según el tipo de datos
+    # Añadir una clave al valor que se publicará y modificar la timestamp
     value_field_name = "value_temperature" if 'temperature' in payload else "value_presence"
-    
     p.field(value_field_name, payload.get('temperature') or payload.get('presence'))
     p.time(payload['timestamp'])
 

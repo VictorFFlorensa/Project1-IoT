@@ -36,6 +36,7 @@ services:
     container_name: albert_presence_sensor
     environment:
       - mqtt=albert_mosquitto
+      - user=albert
     depends_on:
       - albert_mosquitto
 
@@ -46,6 +47,7 @@ services:
     container_name: albert_temp_sensor
     environment:
       - mqtt=albert_mosquitto
+      - user=albert
     depends_on:
       - albert_mosquitto
 
@@ -56,6 +58,7 @@ services:
     container_name: albert_gateway
     environment:
       - mqtt=albert_mosquitto
+      - user=albert
     depends_on:
       - kafka
       - albert_mosquitto
