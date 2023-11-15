@@ -1,8 +1,13 @@
-from kafka import KafkaConsumer, KafkaProducer
+import os
+from kafka import KafkaConsumer
 from influxdb_client import InfluxDBClient, Point
 from influxdb_client.client.write_api import SYNCHRONOUS
 import json
 from time import sleep
+bucket = os.environ.get("DOCKER_INFLUXDB_INIT_BUCKET")
+org = os.environ.get("DOCKER_INFLUXDB_INIT_ORG")
+url = os.environ.get("DOCKER_INFLUXDB_INIT_URL")
+token = os.environ.get("DOCKER_INFLUXDB_INIT_TOKEN")
 
 # Espera 15 segundos para dar tiempo a que Kafka se inicie
 print("Esperando a que Kafka se inicie...")
@@ -12,14 +17,8 @@ sleep(10)
 topics = ['raw_albert_temperature']
 consumer = KafkaConsumer(*topics, bootstrap_servers='kafka:9092', value_deserializer=json.loads)
 
-# Setup InfluxDB
-bucket = "iotproject"
-org = "udl"
-url = "http://influxdb:8086"
-token = "WyvjhFL01fiWmoxTGhm5zO6JoYqSbdki15Mid9NsRs4NsulPnQ3XWd7elgWWEP9nz8FPWFo4WXQw_lxj78C-SA=="
 client = InfluxDBClient(url=url, token=token, org=org)
 write_api = client.write_api(write_options=SYNCHRONOUS)
-    
 
 print("Starting...")
 for message in consumer:
@@ -40,7 +39,7 @@ for message in consumer:
     p.time(payload['timestamp'])
 
     # Escribir el punto en la base de datos
-    write_api.write(bucket=bucket, record=p)
+    write_api.write(bucket="iotproject", record=p)
 
     # Mostrar por pantalla confirmación de envío
     print("Guardados los datos del tópico " + message.topic + " en InfluxDB.")
