@@ -1,42 +1,41 @@
+import json
 import os
 from kafka import KafkaConsumer
 from influxdb_client import InfluxDBClient, Point
 from influxdb_client.client.write_api import SYNCHRONOUS
-import json
+from json import loads
 from time import sleep
+from validateData import get_fields
 bucket = os.environ.get("DOCKER_INFLUXDB_INIT_BUCKET")
 org = os.environ.get("DOCKER_INFLUXDB_INIT_ORG")
-url = os.environ.get("DOCKER_INFLUXDB_INIT_URL")
+influx_url = os.environ.get("DOCKER_INFLUXDB_INIT_URL")
 token = os.environ.get("DOCKER_INFLUXDB_INIT_TOKEN")
+kafka_url = os.environ.get("DOCKER_KAFKA_INIT_TOKEN")
 
 # Espera 15 segundos para dar tiempo a que Kafka se inicie
 print("Esperando a que Kafka se inicie...")
 sleep(10)
 
 # Lista de tópicos a los que suscribirse (output for multiple topics not working for now)
-topics = ['raw_albert_temperature']
-consumer = KafkaConsumer(*topics, bootstrap_servers='kafka:9092', value_deserializer=json.loads)
+topics = ['albert_raw_data', 'dakota_raw_data']
+consumer = KafkaConsumer(*topics, bootstrap_servers=[kafka_url], value_deserializer=lambda x: loads(x.decode('utf-8')))
 
-client = InfluxDBClient(url=url, token=token, org=org)
+#Conectar a InfluxDB
+client = InfluxDBClient(url=influx_url, token=token, org=org)
 write_api = client.write_api(write_options=SYNCHRONOUS)
 
 print("Starting...")
 for message in consumer:
+    result = get_fields(message.value)
+    if result:
+        user, sensor_type, sensor_value, boolean, timestamp = result
+
     p = Point("IOT_DATA")
-
-    # Agregar tags
-    topic_parts = message.topic.split("_")
-    p.tag("data_type", topic_parts[0])
-    p.tag("user", topic_parts[1])
-    p.tag("sensor", topic_parts[2])
-
-    # Convertir a JSON
-    payload = json.loads(message.value)
-
-    # Añadir una clave al valor que se publicará y modificar la timestamp
-    value_field_name = "value_temperature" if 'temperature' in payload else "value_presence"
-    p.field(value_field_name, payload.get('temperature') or payload.get('presence'))
-    p.time(payload['timestamp'])
+    p.tag("isFiltered", boolean)
+    p.tag("user", user)
+    p.tag("sensor", sensor_type)
+    p.field(sensor_type, sensor_value)
+    p.time(timestamp)
 
     # Escribir el punto en la base de datos
     write_api.write(bucket="iotproject", record=p)

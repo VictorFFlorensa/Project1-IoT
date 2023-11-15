@@ -1,10 +1,12 @@
 version: "3.9"
 services:
   albert_mosquitto:
+    container_name: albert_mosquitto
     image: eclipse-mosquitto:1.6.12
 
-  # dakota_mosquitto:
-  #   image: eclipse-mosquitto:1.6.12
+  dakota_mosquitto:
+    container_name: dakota_mosquitto
+    image: eclipse-mosquitto:1.6.12
 
   # tiffany_mosquitto:
   #   image: eclipse-mosquitto:1.6.12
@@ -29,54 +31,6 @@ services:
     depends_on:
       - zookeeper
 
-  albert-presence-sensor:
-    build:
-      context: ./Sensors/presence_sensor
-      dockerfile: Dockerfile
-    container_name: albert_presence_sensor
-    environment:
-      - mqtt=albert_mosquitto
-      - user=albert
-    depends_on:
-      - albert_mosquitto
-
-  albert-temp-sensor:
-    build:
-      context: ./Sensors/temp_sensor
-      dockerfile: Dockerfile
-    container_name: albert_temp_sensor
-    environment:
-      - mqtt=albert_mosquitto
-      - user=albert
-    depends_on:
-      - albert_mosquitto
-
-  albert-gateway:
-    build:
-      context: ./Gateways
-      dockerfile: Dockerfile
-    container_name: albert_gateway
-    environment:
-      - mqtt=albert_mosquitto
-      - user=albert
-    depends_on:
-      - kafka
-      - albert_mosquitto
-      
-  save-processor:
-    build:
-      context: ./Kafka/save-processor
-      dockerfile: Dockerfile
-    container_name: save-processor
-    environment:
-      - DOCKER_INFLUXDB_INIT_BUCKET=iotproject
-      - DOCKER_INFLUXDB_INIT_ORG=udl
-      - DOCKER_INFLUXDB_INIT_URL=http://influxdb:8086
-      - DOCKER_INFLUXDB_INIT_TOKEN=WyvjhFL01fiWmoxTGhm5zO6JoYqSbdki15Mid9NsRs4NsulPnQ3XWd7elgWWEP9nz8FPWFo4WXQw_lxj78C-SA==
-    depends_on:
-      - kafka
-      - influxdb
-
   influxdb:
     image: influxdb:2.4.0
     ports:
@@ -90,27 +44,97 @@ services:
       - DOCKER_INFLUXDB_INIT_BUCKET=iotproject
     volumes:
       - ./influxdb_docker/influx-data:/var/lib/influxdb2
+      
+  save-processor:
+    build:
+      context: ./Kafka/save-processor
+      dockerfile: Dockerfile
+    container_name: save-processor
+    environment:
+      - DOCKER_INFLUXDB_INIT_BUCKET=iotproject
+      - DOCKER_INFLUXDB_INIT_ORG=udl
+      - DOCKER_INFLUXDB_INIT_URL=http://influxdb:8086
+      - DOCKER_INFLUXDB_INIT_TOKEN=WyvjhFL01fiWmoxTGhm5zO6JoYqSbdki15Mid9NsRs4NsulPnQ3XWd7elgWWEP9nz8FPWFo4WXQw_lxj78C-SA==
+      - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
+    depends_on:
+      - kafka
+      - influxdb
 
+  #-------------------------------------------------Albert----------------------------------------------------------
+  
+  albert-presence-sensor:
+    build:
+      context: ./Sensors/presence_sensor
+      dockerfile: Dockerfile
+    container_name: albert_presence_sensor
+    environment:
+      - mqtt=albert_mosquitto
+      - sensor_id=pres1212
+    depends_on:
+      - albert_mosquitto
 
-  # dakota-presence-sensor:
-  #   build:
-  #     context: ./Sensors/presence_sensor
-  #     dockerfile: Dockerfile
-  #   container_name: dakora_presence_sensor
-  #   environment:
-  #     - mqtt=dakota_mosquitto
-  #   depends_on:
-  #     - dakota_mosquitto
+  albert-temp-sensor:
+    build:
+      context: ./Sensors/temp_sensor
+      dockerfile: Dockerfile
+    container_name: albert_temp_sensor
+    environment:
+      - mqtt=albert_mosquitto
+      - sensor_id=temp1212
+    depends_on:
+      - albert_mosquitto
 
-  # dakota-temp-sensor:
-  #   build:
-  #     context: ./Sensors/temp_sensor
-  #     dockerfile: Dockerfile
-  #   container_name: dakota_temp_sensor
-  #   environment:
-  #     - mqtt=dakota_mosquitto
-  #   depends_on:
-  #     - dakota_mosquitto
+  albert-gateway:
+    build:
+      context: ./Gateways
+      dockerfile: Dockerfile
+    container_name: albert_gateway
+    environment:
+      - mqtt=albert_mosquitto
+      - user=albert
+      - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
+    depends_on:
+      - kafka
+      - albert_mosquitto
+
+  #-------------------------------------------------Dakota----------------------------------------------------------
+
+  dakota-presence-sensor:
+    build:
+      context: ./Sensors/presence_sensor
+      dockerfile: Dockerfile
+    container_name: dakora_presence_sensor
+    environment:
+      - mqtt=dakota_mosquitto
+      - sensor_id=pres3434
+    depends_on:
+      - dakota_mosquitto
+
+  dakota-temp-sensor:
+    build:
+      context: ./Sensors/temp_sensor
+      dockerfile: Dockerfile
+    container_name: dakota_temp_sensor
+    environment:
+      - mqtt=dakota_mosquitto
+      - sensor_id=temp3434
+    depends_on:
+      - dakota_mosquitto
+
+  dakota-gateway:
+    build:
+      context: ./Gateways
+      dockerfile: Dockerfile
+    container_name: dakota_gateway
+    environment:
+      - mqtt=dakota_mosquitto
+      - user=dakota
+      - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
+    depends_on:
+      - kafka
+      - dakota_mosquitto
+
+  #-------------------------------------------------Tiffany----------------------------------------------------------
 
   # tiffany-presence-sensor:
   #   build:
@@ -131,6 +155,8 @@ services:
   #     - mqtt=tiffany_mosquitto
   #   depends_on:
   #     - tiffany_mosquitto
+
+  #-------------------------------------------------Tommy----------------------------------------------------------
 
   # tommy-presence-sensor:
   #   build:
