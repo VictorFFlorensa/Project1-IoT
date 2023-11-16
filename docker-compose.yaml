@@ -54,7 +54,7 @@ services:
       - DOCKER_INFLUXDB_INIT_BUCKET=iotproject
       - DOCKER_INFLUXDB_INIT_ORG=udl
       - DOCKER_INFLUXDB_INIT_URL=http://influxdb:8086
-      - DOCKER_INFLUXDB_INIT_TOKEN=WyvjhFL01fiWmoxTGhm5zO6JoYqSbdki15Mid9NsRs4NsulPnQ3XWd7elgWWEP9nz8FPWFo4WXQw_lxj78C-SA==
+      - DOCKER_INFLUXDB_INIT_TOKEN=Ry-ExejcbAAGmVO3azDAZ5eZo8Ck_ZIot3kAyHElvbgxvGQrZOMe29CVYShptOVhM2ss3zASkoRRDB9RX8L67Q==
       - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
     depends_on:
       - kafka
@@ -103,7 +103,7 @@ services:
     build:
       context: ./Sensors/presence_sensor
       dockerfile: Dockerfile
-    container_name: dakora_presence_sensor
+    container_name: dakota_presence_sensor
     environment:
       - mqtt=dakota_mosquitto
       - sensor_id=pres3434

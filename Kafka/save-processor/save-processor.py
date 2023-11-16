@@ -6,6 +6,7 @@ from influxdb_client.client.write_api import SYNCHRONOUS
 from json import loads
 from time import sleep
 from validateData import get_fields
+
 bucket = os.environ.get("DOCKER_INFLUXDB_INIT_BUCKET")
 org = os.environ.get("DOCKER_INFLUXDB_INIT_ORG")
 influx_url = os.environ.get("DOCKER_INFLUXDB_INIT_URL")
