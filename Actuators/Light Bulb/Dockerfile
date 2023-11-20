@@ -3,5 +3,6 @@ RUN mkdir script
 WORKDIR script
 ADD requirements.txt requirements.txt
 RUN pip install -r requirements.txt
-ADD clean-processor.py clean-processor.py
-CMD ["python3", "-u", "clean-processor.py"]
+ADD light_actuator.py light_actuator.py
+CMD ["python3","-u", "light_actuator.py"]
+

@@ -3,5 +3,5 @@ RUN mkdir script
 WORKDIR script
 ADD requirements.txt requirements.txt
 RUN pip install -r requirements.txt
-ADD clean-processor.py clean-processor.py
-CMD ["python3", "-u", "clean-processor.py"]
+ADD heat_actuator.py heat_actuator.py
+CMD ["python3","-u", "heat_actuator.py"]

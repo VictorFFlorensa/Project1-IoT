@@ -18,7 +18,7 @@ def get_fields(data):
             raise ValueError("Error: Neither 'temperature' nor 'presence' key is present")
 
         # Comprobar si 'filtered' está presente
-        isFiltered = data.get('filtered')
+        isFiltered = data.get('is_filtered')
         if isFiltered is None:
             raise ValueError("Error: 'filtered' key is missing")
 

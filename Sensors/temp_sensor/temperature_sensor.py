@@ -3,26 +3,30 @@ import random
 import os
 import time
 import json
+from time import sleep
 host = os.environ.get("mqtt")
-id = os.environ.get("sensor_id")
 
 def temperature_sensor():
     return random.uniform(15, 30)
 
+sleep(12)
+message_id = 0
+
 while True:
     data = {
-        'sensorID' : id,
+        'messageID': message_id,
         'temperature': temperature_sensor(),
         'timestamp': time.strftime('%Y-%m-%d %H:%M:%S')
     }
-    
-    #Convert the dictionary to a JSON string
+
+    # Convert the dictionary to a JSON string
     payload = json.dumps(data)
 
-    #Publish
+    # Publish
     topic = 'mqtt_message'
     publish.single(topic, payload, hostname=host)
-    print(f"Published {payload} on topic {id}")
-    time.sleep(1)
+    print(f"Published {payload} on topic {message_id}")
 
+    message_id += 1
+    time.sleep(1)
 

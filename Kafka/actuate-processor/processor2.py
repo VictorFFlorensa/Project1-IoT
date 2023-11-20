@@ -6,7 +6,6 @@ from time import sleep
 print("Esperando a que Kafka se inicie...")
 sleep(15)
 
-
 consumer = KafkaConsumer('filtered-temperature-topic', bootstrap_servers='kafka:9092', value_deserializer=json.loads)
 producer = KafkaProducer(bootstrap_servers='kafka:9092', value_serializer=lambda v: json.dumps(v).encode('utf-8'))
 

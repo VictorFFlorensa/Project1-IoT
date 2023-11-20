@@ -4,9 +4,9 @@ services:
     container_name: albert_mosquitto
     image: eclipse-mosquitto:1.6.12
 
-  dakota_mosquitto:
-    container_name: dakota_mosquitto
-    image: eclipse-mosquitto:1.6.12
+  # dakota_mosquitto:
+  #   container_name: dakota_mosquitto
+  #   image: eclipse-mosquitto:1.6.12
 
   # tiffany_mosquitto:
   #   image: eclipse-mosquitto:1.6.12
@@ -60,6 +60,16 @@ services:
       - kafka
       - influxdb
 
+  clean-processor:
+    build:
+      context: ./Kafka/clean-processor
+      dockerfile: Dockerfile
+    container_name: clean-processor
+    environment:
+      - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
+    depends_on:
+      - kafka
+
   #-------------------------------------------------Albert----------------------------------------------------------
   
   albert-presence-sensor:
@@ -99,40 +109,40 @@ services:
 
   #-------------------------------------------------Dakota----------------------------------------------------------
 
-  dakota-presence-sensor:
-    build:
-      context: ./Sensors/presence_sensor
-      dockerfile: Dockerfile
-    container_name: dakota_presence_sensor
-    environment:
-      - mqtt=dakota_mosquitto
-      - sensor_id=pres3434
-    depends_on:
-      - dakota_mosquitto
+  # dakota-presence-sensor:
+  #   build:
+  #     context: ./Sensors/presence_sensor
+  #     dockerfile: Dockerfile
+  #   container_name: dakota_presence_sensor
+  #   environment:
+  #     - mqtt=dakota_mosquitto
+  #     - sensor_id=pres3434
+  #   depends_on:
+  #     - dakota_mosquitto
 
-  dakota-temp-sensor:
-    build:
-      context: ./Sensors/temp_sensor
-      dockerfile: Dockerfile
-    container_name: dakota_temp_sensor
-    environment:
-      - mqtt=dakota_mosquitto
-      - sensor_id=temp3434
-    depends_on:
-      - dakota_mosquitto
+  # dakota-temp-sensor:
+  #   build:
+  #     context: ./Sensors/temp_sensor
+  #     dockerfile: Dockerfile
+  #   container_name: dakota_temp_sensor
+  #   environment:
+  #     - mqtt=dakota_mosquitto
+  #     - sensor_id=temp3434
+  #   depends_on:
+  #     - dakota_mosquitto
 
-  dakota-gateway:
-    build:
-      context: ./Gateways
-      dockerfile: Dockerfile
-    container_name: dakota_gateway
-    environment:
-      - mqtt=dakota_mosquitto
-      - user=dakota
-      - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
-    depends_on:
-      - kafka
-      - dakota_mosquitto
+  # dakota-gateway:
+  #   build:
+  #     context: ./Gateways
+  #     dockerfile: Dockerfile
+  #   container_name: dakota_gateway
+  #   environment:
+  #     - mqtt=dakota_mosquitto
+  #     - user=dakota
+  #     - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
+  #   depends_on:
+  #     - kafka
+  #     - dakota_mosquitto
 
   #-------------------------------------------------Tiffany----------------------------------------------------------
 

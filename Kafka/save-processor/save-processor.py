@@ -1,4 +1,3 @@
-import json
 import os
 from kafka import KafkaConsumer
 from influxdb_client import InfluxDBClient, Point
@@ -18,7 +17,7 @@ print("Esperando a que Kafka se inicie...")
 sleep(10)
 
 # Lista de tópicos a los que suscribirse (output for multiple topics not working for now)
-topics = ['raw_data']
+topics = ['raw_data','processed_data']
 consumer = KafkaConsumer(*topics, bootstrap_servers=[kafka_url], value_deserializer=lambda x: loads(x.decode('utf-8')))
 
 #Conectar a InfluxDB
@@ -27,22 +26,20 @@ write_api = client.write_api(write_options=SYNCHRONOUS)
 
 print("Starting...")
 for message in consumer:
-    result = get_fields(message.value)
-    if result:
-        user, sensor_type, sensor_value, boolean, timestamp = result
+    print("Guardados los datos en InfluxDB: ", message.value)
 
-    p = Point("IOT_DATA")
-    p.tag("isFiltered", boolean)
-    p.tag("user", user)
-    p.tag("sensor", sensor_type)
-    p.field(sensor_type, sensor_value)
-    p.time(timestamp)
+    # result = get_fields(message.value)
+    # if result:
+    #     user, sensor_type, sensor_value, isFiltered, timestamp = result
 
-    # Escribir el punto en la base de datos
-    write_api.write(bucket="iotproject", record=p)
+    # p = Point("IOT_DATA")
+    # p.tag("isFiltered", isFiltered)
+    # p.tag("user", user)
+    # p.tag("sensor", sensor_type)
+    # p.field(sensor_type, sensor_value)
+    # p.time(timestamp)
+
+    # # Escribir el punto en la base de datos
+    # write_api.write(bucket="iotproject", record=p)
 
     # Mostrar por pantalla confirmación de envío
-    print("Guardados los datos del tópico " + message.topic + " en InfluxDB.")
-
-
-    
