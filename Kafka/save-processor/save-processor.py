@@ -18,7 +18,7 @@ print("Esperando a que Kafka se inicie...")
 sleep(10)
 
 # Lista de tópicos a los que suscribirse (output for multiple topics not working for now)
-topics = ['albert_raw_data', 'dakota_raw_data']
+topics = ['raw_data']
 consumer = KafkaConsumer(*topics, bootstrap_servers=[kafka_url], value_deserializer=lambda x: loads(x.decode('utf-8')))
 
 #Conectar a InfluxDB

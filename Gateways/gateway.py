@@ -19,7 +19,7 @@ def on_message_print(client, userdata, message):
     data = json.loads(payload)
     data['user'] = name
     data['filtered'] = False
-    topic = f"{name}_raw_data"
+    topic = "raw_data"
     producer.send(topic, value=data)
     print("Enviado por %s %s" % ("raw_data", data))
 
