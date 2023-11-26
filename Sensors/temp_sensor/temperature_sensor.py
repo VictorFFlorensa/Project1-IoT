@@ -4,7 +4,16 @@ import os
 import time
 import json
 from time import sleep
+import sys
+import signal
 host = os.environ.get("mqtt")
+
+# Manejar finalización del programa
+def on_exit(signum, frame):
+    print("Programa detenido manualmente.")
+    sys.exit(0)
+
+signal.signal(signal.SIGTERM, on_exit)
 
 def temperature_sensor():
     return random.uniform(15, 30)
@@ -23,9 +32,9 @@ while True:
     payload = json.dumps(data)
 
     # Publish
-    topic = 'mqtt_message'
+    topic = 'temperature-sensor'
     publish.single(topic, payload, hostname=host)
-    print(f"Published {payload} on topic {message_id}")
+    print(f"Published {payload} on topic {topic}")
 
     message_id += 1
     time.sleep(1)

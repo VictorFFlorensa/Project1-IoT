@@ -3,6 +3,15 @@ import json
 from time import sleep
 import paho.mqtt.publish as publish
 import os
+import signal
+import sys
+
+# Manejar finalización del programa
+def on_exit(signum, frame):
+    print("Programa detenido manualmente.")
+    sys.exit(0)
+
+signal.signal(signal.SIGTERM, on_exit)
 kafka_url = os.environ.get("DOCKER_KAFKA_INIT_TOKEN")
 albert_host = os.environ.get("mqtt_albert")
 tiffany_host = os.environ.get("mqtt_tiffany")

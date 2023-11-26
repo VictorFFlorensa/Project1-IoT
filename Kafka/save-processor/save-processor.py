@@ -4,6 +4,15 @@ from influxdb_client import InfluxDBClient, Point
 from influxdb_client.client.write_api import SYNCHRONOUS
 from json import loads
 from time import sleep
+import signal
+import sys
+
+# Manejar finalización del programa
+def on_exit(signum, frame):
+    print("Programa detenido manualmente.")
+    sys.exit(0)
+
+signal.signal(signal.SIGTERM, on_exit)
 
 bucket = os.environ.get("DOCKER_INFLUXDB_INIT_BUCKET")
 org = os.environ.get("DOCKER_INFLUXDB_INIT_ORG")

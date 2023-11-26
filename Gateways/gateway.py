@@ -2,11 +2,20 @@ import json
 from time import sleep
 from json import dumps
 from kafka import KafkaProducer
+import signal
+import sys
 import paho.mqtt.subscribe as subscribe
 import os
 host = os.environ.get("mqtt")
 name = os.environ.get("user")
 kafka_url = os.environ.get("DOCKER_KAFKA_INIT_TOKEN")
+
+# Manejar finalización del programa
+def on_exit(signum, frame):
+    print("Programa detenido manualmente.")
+    sys.exit(0)
+
+signal.signal(signal.SIGTERM, on_exit)
 
 # Espera 10 segundos para dar tiempo a que Kafka se inicie
 print("Esperando a que Kafka se inicie...")
@@ -25,6 +34,7 @@ def on_message_print(client, userdata, message):
 
 
 print("Starting...")
+subscribe.callback(on_message_print, ["temperature-sensor", "presence-sensor"], hostname=host)
+
 while True:
-    subscribe.callback(on_message_print, "mqtt_message", hostname=host)    
-    sleep(1)
+        sleep(1)

@@ -2,6 +2,15 @@ import paho.mqtt.subscribe as subscribe
 import os
 from time import sleep
 import json
+import signal
+import sys
+
+# Manejar finalización del programa
+def on_exit(signum, frame):
+    print("Programa detenido manualmente.")
+    sys.exit(0)
+
+signal.signal(signal.SIGTERM, on_exit)
 
 host = os.environ.get("mqtt")
 
@@ -29,7 +38,8 @@ def on_message_actuate_light_bulb(client, userdata, message):
         raise ValueError("Received presence value is None. Cannot process.")
 
 print("Starting...")
+topic = "light-bulb"
+subscribe.callback(on_message_actuate_light_bulb, topic, hostname=host)
+
 while True:
-    topic = "light-bulb"
-    subscribe.callback(on_message_actuate_light_bulb, topic, hostname=host)
     sleep(1)

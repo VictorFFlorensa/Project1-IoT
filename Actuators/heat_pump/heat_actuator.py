@@ -2,6 +2,16 @@ import paho.mqtt.subscribe as subscribe
 import os
 from time import sleep
 import json
+import signal
+import sys
+
+# Manejar finalización del programa
+def on_exit(signum, frame):
+    print("Programa detenido manualmente.")
+    sys.exit(0)
+
+signal.signal(signal.SIGTERM, on_exit)
+
 host = os.environ.get("mqtt")
 
 # Espera 10 segundos para dar tiempo a que Kafka se inicie
@@ -28,9 +38,10 @@ def on_message_print(client, userdata, message):
         raise ValueError("Received temperature is None. Cannot process.")
 
 print("Starting...")
-while True:
-    topic = "heat-pump"
-    subscribe.callback(on_message_print, topic, hostname=host)    
+topic = "heat-pump"
+subscribe.callback(on_message_print, topic, hostname=host) 
+
+while True:   
     sleep(1)
 
 

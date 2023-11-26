@@ -3,6 +3,17 @@ import json
 import os
 from time import sleep
 from json import loads
+import signal
+import sys
+
+# Manejar finalización del programa
+def on_exit(signum, frame):
+    print("Programa detenido manualmente.")
+    sys.exit(0)
+
+signal.signal(signal.SIGTERM, on_exit)
+
+
 kafka_url = os.environ.get("DOCKER_KAFKA_INIT_TOKEN")
 
 # Espera 10 segundos para dar tiempo a que Kafka se inicie
