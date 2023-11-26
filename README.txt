@@ -9,4 +9,4 @@ On: docker-compose.yaml -> save-processor replace the new authentication key.
 
 
 Other considerations:
-In order to get messages from different topics in kafka, kafka has to be in the same consumer group.
+Kafka consumer groups not working.
