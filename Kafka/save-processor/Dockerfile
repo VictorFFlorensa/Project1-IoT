@@ -4,5 +4,4 @@ WORKDIR script
 ADD requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 ADD save-processor.py save-processor.py
-ADD validateData.py validateData.py
 CMD ["python3", "-u", "save-processor.py"]
