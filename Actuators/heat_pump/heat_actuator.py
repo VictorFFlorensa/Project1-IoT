@@ -17,11 +17,11 @@ def on_message_print(client, userdata, message):
     received_temperature = data.get('temperature')
 
     if received_temperature is not None:
-        if 18 <= received_temperature <= 20 and current_temperature==24:
+        if 18 <= received_temperature <= 20 and current_temperature==20:
             current_temperature = 24
             print(f"Heat Pump current_temperature: {current_temperature} °C, because received_temperature: {received_temperature}")
 
-        elif 24 <= received_temperature <= 28 and current_temperature==20:
+        elif 24 <= received_temperature <= 28 and current_temperature==24:
             current_temperature = 20
             print(f"Heat Pump current_temperature: {current_temperature} °C, because received_temperature: {received_temperature}")
     else:
