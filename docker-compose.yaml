@@ -4,9 +4,9 @@ services:
     container_name: albert_mosquitto
     image: eclipse-mosquitto:1.6.12
 
-  # dakota_mosquitto:
-  #   container_name: dakota_mosquitto
-  #   image: eclipse-mosquitto:1.6.12
+  dakota_mosquitto:
+    container_name: dakota_mosquitto
+    image: eclipse-mosquitto:1.6.12
 
   # tiffany_mosquitto:
   #   image: eclipse-mosquitto:1.6.12
@@ -49,7 +49,7 @@ services:
     build:
       context: ./Kafka/save-processor
       dockerfile: Dockerfile
-    container_name: save-processor
+    container_name: kafka-save
     environment:
       - DOCKER_INFLUXDB_INIT_BUCKET=iotproject
       - DOCKER_INFLUXDB_INIT_ORG=udl
@@ -64,7 +64,7 @@ services:
     build:
       context: ./Kafka/clean-processor
       dockerfile: Dockerfile
-    container_name: clean-processor
+    container_name: kafka-clean
     environment:
       - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
     depends_on:
@@ -74,7 +74,7 @@ services:
     build:
       context: ./Kafka/actuate-processor
       dockerfile: Dockerfile
-    container_name: actuate-processor
+    container_name: kafka-actuate
     environment:
       - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
       - mqtt_albert=albert_mosquitto
@@ -88,21 +88,21 @@ services:
 
   #-------------------------------------------------Albert----------------------------------------------------------
   
-  albert-presence-sensor:
+  albert-presence:
     build:
       context: ./Sensors/presence_sensor
       dockerfile: Dockerfile
-    container_name: albert_presence_sensor
+    container_name: albert_presence
     environment:
       - mqtt=albert_mosquitto
     depends_on:
       - albert_mosquitto
 
-  albert-temp-sensor:
+  albert-temperature:
     build:
       context: ./Sensors/temp_sensor
       dockerfile: Dockerfile
-    container_name: albert_temp_sensor
+    container_name: albert_temperature
     environment:
       - mqtt=albert_mosquitto
     depends_on:
@@ -125,7 +125,7 @@ services:
     build:
       context: ./Actuators/heat_pump
       dockerfile: Dockerfile
-    container_name: albert-heat-pump
+    container_name: albert-heatPump
     environment:
       - mqtt=albert_mosquitto
     depends_on:
@@ -135,7 +135,7 @@ services:
     build:
       context: ./Actuators/light_bulb
       dockerfile: Dockerfile
-    container_name: albert-light-bulb
+    container_name: albert-lightBulb
     environment:
       - mqtt=albert_mosquitto
     depends_on:
@@ -143,38 +143,58 @@ services:
 
   #-------------------------------------------------Dakota----------------------------------------------------------
 
-  # dakota-presence-sensor:
-  #   build:
-  #     context: ./Sensors/presence_sensor
-  #     dockerfile: Dockerfile
-  #   container_name: dakota_presence_sensor
-  #   environment:
-  #     - mqtt=dakota_mosquitto
-  #   depends_on:
-  #     - dakota_mosquitto
+  dakota-presence:
+    build:
+      context: ./Sensors/presence_sensor
+      dockerfile: Dockerfile
+    container_name: dakota_presence
+    environment:
+      - mqtt=dakota_mosquitto
+    depends_on:
+      - dakota_mosquitto
 
-  # dakota-temp-sensor:
-  #   build:
-  #     context: ./Sensors/temp_sensor
-  #     dockerfile: Dockerfile
-  #   container_name: dakota_temp_sensor
-  #   environment:
-  #     - mqtt=dakota_mosquitto
-  #   depends_on:
-  #     - dakota_mosquitto
+  dakota-temperature:
+    build:
+      context: ./Sensors/temp_sensor
+      dockerfile: Dockerfile
+    container_name: dakota_temp_sensor
+    environment:
+      - mqtt=dakota_mosquitto
+    depends_on:
+      - dakota_mosquitto
 
-  # dakota-gateway:
-  #   build:
-  #     context: ./Gateways
-  #     dockerfile: Dockerfile
-  #   container_name: dakota_gateway
-  #   environment:
-  #     - mqtt=dakota_mosquitto
-  #     - user=dakota
-  #     - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
-  #   depends_on:
-  #     - kafka
-  #     - dakota_mosquitto
+  dakota-gateway:
+    build:
+      context: ./Gateways
+      dockerfile: Dockerfile
+    container_name: dakota_gateway
+    environment:
+      - mqtt=dakota_mosquitto
+      - user=dakota
+      - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
+    depends_on:
+      - kafka
+      - dakota_mosquitto
+
+  dakota-heat-pump:
+    build:
+      context: ./Actuators/heat_pump
+      dockerfile: Dockerfile
+    container_name: dakota-heatPump
+    environment:
+      - mqtt=dakota_mosquitto
+    depends_on:
+      - dakota_mosquitto
+
+  dakota-light-bulb:
+    build:
+      context: ./Actuators/light_bulb
+      dockerfile: Dockerfile
+    container_name: dakota-lightBulb
+    environment:
+      - mqtt=dakota_mosquitto
+    depends_on:
+      - dakota_mosquitto
 
   #-------------------------------------------------Tiffany----------------------------------------------------------
 
