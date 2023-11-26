@@ -18,7 +18,6 @@ consumer = KafkaConsumer('raw_data', bootstrap_servers=kafka_url, value_deserial
 print("Starting...")
 for message in consumer:
 
-    #Publish 
     data = message.value
     user = data.get('user')
     mqtt_host = {
@@ -28,5 +27,14 @@ for message in consumer:
         'tommy': tommy_host
     }.get(user)
 
-    topic = data.get('temperature') and 'heat-pump' or data.get('presence') and 'light-bulb'
-    #publish.single(topic, payload, hostname=mqtt_host)
+    if 'temperature' in data:
+        topic = 'heat-pump'
+    else:
+        topic = 'light-bulb'
+
+    #Publish 
+    payload = json.dumps(data)
+    publish.single(topic, payload, hostname=mqtt_host)
+    print("Enviado por %s %s" % (topic, data))
+
+    

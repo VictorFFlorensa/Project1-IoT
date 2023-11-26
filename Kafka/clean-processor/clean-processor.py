@@ -23,4 +23,4 @@ for message in consumer:
     if (sensor_type == 'temperature' and 18 <= sensor_value <= 28) or (sensor_type == 'presence' and 0 <= sensor_value <= 100):
         data['is_cleaned'] = True
         print("Sended-Message: ", data)
-        producer.send('clean_data', value=message.value)
+        producer.send('clean_data', value=data)

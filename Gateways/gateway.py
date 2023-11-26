@@ -26,5 +26,5 @@ def on_message_print(client, userdata, message):
 
 print("Starting...")
 while True:
-    subscribe.callback(on_message_print, "+", hostname=host)    
+    subscribe.callback(on_message_print, "mqtt_message", hostname=host)    
     sleep(1)

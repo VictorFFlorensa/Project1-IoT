@@ -70,20 +70,20 @@ services:
     depends_on:
       - kafka
 
-  # actuator-processor:
-  #   build:
-  #     context: ./Kafka/actuate-processor
-  #     dockerfile: Dockerfile
-  #   container_name: actuate-processor
-  #   environment:
-  #     - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
-  #     - mqtt_albert=albert_mosquitto
-  #     - mqtt_tiffany=tiffany_mosquitto
-  #     - mqtt_dakota=dakota_mosquitto
-  #     - mqtt_tommy=tommy_mosquitto
-  #   depends_on:
-  #     - kafka
-  #     - albert_mosquitto
+  actuator-processor:
+    build:
+      context: ./Kafka/actuate-processor
+      dockerfile: Dockerfile
+    container_name: actuate-processor
+    environment:
+      - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
+      - mqtt_albert=albert_mosquitto
+      - mqtt_tiffany=tiffany_mosquitto
+      - mqtt_dakota=dakota_mosquitto
+      - mqtt_tommy=tommy_mosquitto
+    depends_on:
+      - kafka
+      - albert_mosquitto
     
 
   #-------------------------------------------------Albert----------------------------------------------------------
@@ -121,15 +121,15 @@ services:
       - kafka
       - albert_mosquitto
 
-  # albert-heat-actuator:
-  #   build:
-  #     context: ./Actuators/heat_pump
-  #     dockerfile: Dockerfile
-  #   container_name: albert-heat-actuator
-  #   environment:
-  #     - mqtt=albert_mosquitto
-  #   depends_on:
-  #     - albert_mosquitto
+  albert-heat-actuator:
+    build:
+      context: ./Actuators/heat_pump
+      dockerfile: Dockerfile
+    container_name: albert-heat-pump
+    environment:
+      - mqtt=albert_mosquitto
+    depends_on:
+      - albert_mosquitto
 
   #-------------------------------------------------Dakota----------------------------------------------------------
 
