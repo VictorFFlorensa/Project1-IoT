@@ -121,11 +121,21 @@ services:
       - kafka
       - albert_mosquitto
 
-  albert-heat-actuator:
+  albert-heat-pump:
     build:
       context: ./Actuators/heat_pump
       dockerfile: Dockerfile
     container_name: albert-heat-pump
+    environment:
+      - mqtt=albert_mosquitto
+    depends_on:
+      - albert_mosquitto
+
+  albert-light-bulb:
+    build:
+      context: ./Actuators/light_bulb
+      dockerfile: Dockerfile
+    container_name: albert-light-bulb
     environment:
       - mqtt=albert_mosquitto
     depends_on:
