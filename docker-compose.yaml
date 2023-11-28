@@ -58,12 +58,12 @@ services:
       - DOCKER_INFLUXDB_INIT_BUCKET=iotproject
       - DOCKER_INFLUXDB_INIT_ORG=udl
       - DOCKER_INFLUXDB_INIT_URL=http://influxdb:8086
-      - DOCKER_INFLUXDB_INIT_TOKEN=Ry-ExejcbAAGmVO3azDAZ5eZo8Ck_ZIot3kAyHElvbgxvGQrZOMe29CVYShptOVhM2ss3zASkoRRDB9RX8L67Q==
+      - DOCKER_INFLUXDB_INIT_TOKEN=ma3qcICYJpauFY26dwXIm-3FbHUgCkTATxIEoCys0pkzYbEUwqt5NC7v7XdncqW7dRRdmCIxBxDNVVhPPgCOkg==
       - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
       - GROUP_ID=save-consumer-group
     depends_on:
-      kafka:
-        condition: service_healthy
+      kafka-topic-creator:
+        condition: service_completed_successfully
       influxdb:
         condition: service_started
     deploy:
@@ -76,8 +76,8 @@ services:
     environment:
       - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
     depends_on:
-      kafka:
-        condition: service_healthy
+      kafka-topic-creator:
+        condition: service_completed_successfully
     deploy:
       replicas: 3
 
@@ -92,8 +92,8 @@ services:
       - mqtt_dakota=dakota_mosquitto
       - mqtt_tommy=tommy_mosquitto
     depends_on:
-      kafka:
-        condition: service_healthy
+      kafka-topic-creator:
+        condition: service_completed_successfully
       albert_mosquitto:
         condition: service_started
     deploy:
@@ -122,7 +122,10 @@ services:
       - mqtt=albert_mosquitto
       - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
     depends_on:
-      - albert_mosquitto
+      kafka-topic-creator:
+        condition: service_completed_successfully
+      albert_mosquitto:
+        condition: service_started
 
   albert-temperature:
     build:
@@ -133,7 +136,10 @@ services:
       - mqtt=albert_mosquitto
       - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
     depends_on:
-      - albert_mosquitto
+      kafka-topic-creator:
+        condition: service_completed_successfully
+      albert_mosquitto:
+        condition: service_started
 
   albert-gateway:
     build:
@@ -145,8 +151,8 @@ services:
       - user=albert
       - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
     depends_on:
-      kafka:
-        condition: service_healthy
+      kafka-topic-creator:
+        condition: service_completed_successfully
       albert_mosquitto:
         condition: service_started
 
@@ -181,7 +187,10 @@ services:
       - mqtt=dakota_mosquitto
       - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
     depends_on:
-      - dakota_mosquitto
+      kafka-topic-creator:
+        condition: service_completed_successfully
+      dakota_mosquitto:
+        condition: service_started
 
   dakota-temperature:
     build:
@@ -192,7 +201,10 @@ services:
       - mqtt=dakota_mosquitto
       - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
     depends_on:
-      - dakota_mosquitto
+      kafka-topic-creator:
+        condition: service_completed_successfully
+      dakota_mosquitto:
+        condition: service_started
 
   dakota-gateway:
     build:
@@ -204,9 +216,9 @@ services:
       - user=dakota
       - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
     depends_on:
-      kafka:
-        condition: service_healthy
-      albert_mosquitto:
+      kafka-topic-creator:
+        condition: service_completed_successfully
+      dakota_mosquitto:
         condition: service_started
 
   dakota-heat-pump:

@@ -21,56 +21,38 @@ def on_exit(signum, frame):
     sys.exit(0)
     
 
-#Verificar que el topico ha sido creado
-def topic_exists(topic):
-    admin_client = KafkaAdminClient(bootstrap_servers=[kafka_url])
-    max_retries = 5
-    retries = 0
-
-    while retries < max_retries:
-        topic_metadata = admin_client.list_topics()
-        if topic in topic_metadata:
-            return True
-        else:
-            print(f"El tópico '{topic}' no existe. Esperando 2 segundos antes de volver a intentar.")
-            sleep(2)
-            retries += 1
-
-    return False
-
 
 if __name__ == "__main__":
     signal.signal(signal.SIGTERM, on_exit)
-    if (topic_exists('clean_data') and topic_exists('raw_data')):
+    
+    #Lista de tópicos a los que suscribirse
+    topics = ['clean_data','raw_data']
+    consumer = KafkaConsumer(*topics, bootstrap_servers=[kafka_url], value_deserializer=lambda x: loads(x.decode('utf-8')), group_id="save")
 
-        #Lista de tópicos a los que suscribirse
-        topics = ['clean_data','raw_data']
-        consumer = KafkaConsumer(*topics, bootstrap_servers=[kafka_url], value_deserializer=lambda x: loads(x.decode('utf-8')), group_id="save")
+    #Conectar a InfluxDB
+    client = InfluxDBClient(url=influx_url, token=token, org=org)
+    write_api = client.write_api(write_options=SYNCHRONOUS)
 
-        #Conectar a InfluxDB
-        client = InfluxDBClient(url=influx_url, token=token, org=org)
-        write_api = client.write_api(write_options=SYNCHRONOUS)
+    print("Starting...")
+    for message in consumer:
+        data = message.value
+        user = data.get('user')
+        sensor_type = data.get('temperature') and 'temperature' or data.get('presence') and 'presence'
+        sensor_value = data[sensor_type]
+        isCleaned = data.get('is_cleaned')
+        timestamp = data.get('timestamp')
 
-        print("Starting...")
-        for message in consumer:
-            data = message.value
-            user = data.get('user')
-            sensor_type = data.get('temperature') and 'temperature' or data.get('presence') and 'presence'
-            sensor_value = data[sensor_type]
-            isCleaned = data.get('is_cleaned')
-            timestamp = data.get('timestamp')
+        p = Point("IOT_DATA")
+        p.tag("isCleaned", isCleaned)
+        p.tag("user", user)
+        p.field(sensor_type, sensor_value)
+        p.time(timestamp)
 
-            p = Point("IOT_DATA")
-            p.tag("isCleaned", isCleaned)
-            p.tag("user", user)
-            p.field(sensor_type, sensor_value)
-            p.time(timestamp)
+        # Escribir el punto en la base de datos
+        write_api.write(bucket="iotproject", record=p)
 
-            # Escribir el punto en la base de datos
-            write_api.write(bucket="iotproject", record=p)
-
-            # Mostrar por pantalla confirmación de envío
-            print("Guardados los datos en InfluxDB: ", message.value)
+        # Mostrar por pantalla confirmación de envío
+        print("Guardados los datos en InfluxDB: ", message.value)
 
 
 
