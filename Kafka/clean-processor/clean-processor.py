@@ -16,23 +16,6 @@ def on_exit(signum, frame):
     print("Programa detenido manualmente.")
     sys.exit(0)
 
-#Verificar que el topico ha sido creado
-def topic_exists(topic):
-    admin_client = KafkaAdminClient(bootstrap_servers=[kafka_url])
-    max_retries = 5
-    retries = 0
-
-    while retries < max_retries:
-        topic_metadata = admin_client.list_topics()
-        if topic in topic_metadata:
-            return True
-        else:
-            print(f"El tópico '{topic}' no existe. Esperando 2 segundos antes de volver a intentar.")
-            sleep(2)
-            retries += 1
-
-    return False
-
 
 if __name__ == "__main__":
     signal.signal(signal.SIGTERM, on_exit)
@@ -51,5 +34,4 @@ if __name__ == "__main__":
         if (sensor_type == 'temperature' and 18 <= sensor_value <= 28) or (sensor_type == 'presence' and 0 <= sensor_value <= 100):
             data['is_cleaned'] = True
             print("Sended-Message: ", data)
-            if (topic_exists('clean_data')):
-                producer.send('clean_data', value=data)
+            producer.send('clean_data', value=data)

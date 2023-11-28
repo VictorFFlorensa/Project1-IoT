@@ -20,51 +20,32 @@ def on_exit(signum, frame):
     sys.exit(0)
 
 
-#Verificar que el topico ha sido creado
-def topic_exists(topic):
-    admin_client = KafkaAdminClient(bootstrap_servers=[kafka_url])
-    max_retries = 5
-    retries = 0
-
-    while retries < max_retries:
-        topic_metadata = admin_client.list_topics()
-        if topic in topic_metadata:
-            return True
-        else:
-            print(f"El tópico '{topic}' no existe. Esperando 2 segundos antes de volver a intentar.")
-            sleep(2)
-            retries += 1
-
-    return False
-
-
 if __name__ == "__main__":
     signal.signal(signal.SIGTERM, on_exit)
-    if (topic_exists('clean_data')):
 
-        #Lista de tópicos a los que suscribirse
-        consumer = KafkaConsumer('clean_data', bootstrap_servers=kafka_url, value_deserializer=json.loads, group_id="actuate")
-        
-        print("Starting...")
-        for message in consumer:
+    #Lista de tópicos a los que suscribirse
+    consumer = KafkaConsumer('clean_data', bootstrap_servers=kafka_url, value_deserializer=json.loads, group_id="actuate")
+    
+    print("Starting...")
+    for message in consumer:
 
-            data = message.value
-            user = data.get('user')
-            mqtt_host = {
-                'albert': albert_host,
-                'tiffany': tiffany_host,
-                'dakota': dakota_host,
-                'tommy': tommy_host
-            }.get(user)
+        data = message.value
+        user = data.get('user')
+        mqtt_host = {
+            'albert': albert_host,
+            'tiffany': tiffany_host,
+            'dakota': dakota_host,
+            'tommy': tommy_host
+        }.get(user)
 
-            if 'temperature' in data:
-                topic = 'heat-pump'
-            else:
-                topic = 'light-bulb'
+        if 'temperature' in data:
+            topic = 'heat-pump'
+        else:
+            topic = 'light-bulb'
 
-            #Publish 
-            payload = json.dumps(data)
-            publish.single(topic, payload, hostname=mqtt_host)
-            print("Enviado por %s %s" % (topic, data))
+        #Publish 
+        payload = json.dumps(data)
+        publish.single(topic, payload, hostname=mqtt_host)
+        print("Enviado por %s %s" % (topic, data))
 
     
