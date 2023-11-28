@@ -287,8 +287,10 @@ services:
       - user=tiffany
       - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
     depends_on:
-      - kafka
-      - tiffany_mosquitto
+      kafka-topic-creator:
+        condition: service_completed_successfully
+      tiffany_mosquitto:
+        condition: service_started
 
   tiffany-heat-pump:
     build:
@@ -342,8 +344,10 @@ services:
       - user=tommy
       - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
     depends_on:
-      - kafka
-      - tommy_mosquitto
+      kafka-topic-creator:
+        condition: service_completed_successfully
+      tommy_mosquitto:
+        condition: service_started
 
   tommy-heat-pump:
     build:

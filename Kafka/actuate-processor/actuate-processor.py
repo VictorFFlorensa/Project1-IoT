@@ -42,28 +42,10 @@ mqtt_host = {
     'tommy': tommy_host
 }
 
-# usernames = {
-#     -
-# }
-
-# passwords = {
-#     -
-# }
-
 mqtt_clients = {
     user: mqtt.Client()
     for user in users
 }
-# #TODO
-# mqtt_username ={
-#     username: 
-#     for username in usernames
-# }
-# #TODO
-# mqtt_password = {
-#     pw: 
-#     for pw in passwords
-# }
 
 for user in users:
     client = mqtt_clients[user]

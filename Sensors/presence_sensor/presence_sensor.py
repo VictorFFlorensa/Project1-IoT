@@ -27,6 +27,9 @@ signal.signal(signal.SIGTERM, on_exit)
 sleep(5)
 
 message_id = 0
+client = mqtt.Client()
+client.username_pw_set(mqtt_username, password = mqtt_password)
+client.connect(host, 1883, 60)
 
 while True:
     data = {
@@ -34,9 +37,6 @@ while True:
         'presence': presence_value(),
         'timestamp': time.strftime('%Y-%m-%d %H:%M:%S')
     }
-    client = mqtt.Client()
-    client.username_pw_set(mqtt_username, password = mqtt_password)
-    client.connect(host, 1883, 60)
 
     #Convert the dictionary to a JSON string
     payload = json.dumps(data)

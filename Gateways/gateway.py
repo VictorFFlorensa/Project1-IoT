@@ -21,10 +21,7 @@ def on_exit(signum, frame):
     client.disconnect()
     sys.exit(0)
 
-if __name__ == "__main__":
-    signal.signal(signal.SIGTERM, on_exit)
-
-    producer = KafkaProducer(bootstrap_servers=[kafka_url], value_serializer=lambda x: dumps(x).encode('utf-8'))
+signal.signal(signal.SIGTERM, on_exit)
 
 producer = KafkaProducer(bootstrap_servers=[kafka_url], value_serializer=lambda x: dumps(x).encode('utf-8'))
 
@@ -33,6 +30,7 @@ def on_connect(client : mqtt.Client, userdata, flags, rc):
      client.subscribe([("temperature-sensor", 0), ("presence-sensor", 0)])
 
 def on_message_print(client, userdata, message):
+    print('Received')
     payload = message.payload.decode('utf-8')
     data = json.loads(payload)
     data['user'] = name
