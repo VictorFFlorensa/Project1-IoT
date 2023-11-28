@@ -14,11 +14,11 @@ services:
       - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
       - ./mosquitto/passwords.txt:/mosquitto/config/passwords.txt
 
-  # tiffany_mosquitto:
-  #   image: eclipse-mosquitto:1.6.12
+  tiffany_mosquitto:
+    image: eclipse-mosquitto:1.6.12
 
-  # tommy_mosquitto:
-  #   image: eclipse-mosquitto:1.6.12
+  tommy_mosquitto:
+    image: eclipse-mosquitto:1.6.12
 
   zookeeper:
     image: docker.io/bitnami/zookeeper:3.8
@@ -207,110 +207,110 @@ services:
 
   #-------------------------------------------------Tiffany----------------------------------------------------------
 
-  # tiffany-presence-sensor:
-  #   build:
-  #     context: ./Sensors/presence_sensor
-  #     dockerfile: Dockerfile
-  #   container_name: tiffany_presence_sensor
-  #   environment:
-  #     - mqtt=tiffany_mosquitto
-  #   depends_on:
-  #     - tiffany_mosquitto
+  tiffany-presence-sensor:
+    build:
+      context: ./Sensors/presence_sensor
+      dockerfile: Dockerfile
+    container_name: tiffany_presence_sensor
+    environment:
+      - mqtt=tiffany_mosquitto
+    depends_on:
+      - tiffany_mosquitto
 
-  # tiffany-temp-sensor:
-  #   build:
-  #     context: ./Sensors/temp_sensor
-  #     dockerfile: Dockerfile
-  #   container_name: tiffany_temp_sensor
-  #   environment:
-  #     - mqtt=tiffany_mosquitto
-  #   depends_on:
-  #     - tiffany_mosquitto
+  tiffany-temp-sensor:
+    build:
+      context: ./Sensors/temp_sensor
+      dockerfile: Dockerfile
+    container_name: tiffany_temp_sensor
+    environment:
+      - mqtt=tiffany_mosquitto
+    depends_on:
+      - tiffany_mosquitto
 
-  # tiffany-gateway:
-  #   build:
-  #     context: ./Gateways
-  #     dockerfile: Dockerfile
-  #   container_name: tiffany_gateway
-  #   environment:
-  #     - mqtt=tiffany_mosquitto
-  #     - user=tiffany
-  #     - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
-  #   depends_on:
-  #     - kafka
-  #     - tiffany_mosquitto
+  tiffany-gateway:
+    build:
+      context: ./Gateways
+      dockerfile: Dockerfile
+    container_name: tiffany_gateway
+    environment:
+      - mqtt=tiffany_mosquitto
+      - user=tiffany
+      - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
+    depends_on:
+      - kafka
+      - tiffany_mosquitto
 
-  # tiffany-heat-pump:
-  #   build:
-  #     context: ./Actuators/heat_pump
-  #     dockerfile: Dockerfile
-  #   container_name: tiffany-heatPump
-  #   environment:
-  #     - mqtt=tiffany_mosquitto
-  #   depends_on:
-  #     - tiffany_mosquitto
+  tiffany-heat-pump:
+    build:
+      context: ./Actuators/heat_pump
+      dockerfile: Dockerfile
+    container_name: tiffany-heatPump
+    environment:
+      - mqtt=tiffany_mosquitto
+    depends_on:
+      - tiffany_mosquitto
 
-  # tiffany-light-bulb:
-  #   build:
-  #     context: ./Actuators/light_bulb
-  #     dockerfile: Dockerfile
-  #   container_name: tiffany-lightBulb
-  #   environment:
-  #     - mqtt=tiffany_mosquitto
-  #   depends_on:
-  #     - tiffany_mosquitto
+  tiffany-light-bulb:
+    build:
+      context: ./Actuators/light_bulb
+      dockerfile: Dockerfile
+    container_name: tiffany-lightBulb
+    environment:
+      - mqtt=tiffany_mosquitto
+    depends_on:
+      - tiffany_mosquitto
 
   #-------------------------------------------------Tommy----------------------------------------------------------
 
-  # tommy-presence-sensor:
-  #   build:
-  #     context: ./Sensors/presence_sensor
-  #     dockerfile: Dockerfile
-  #   container_name: tommy_presence_sensor
-  #   environment:
-  #     - mqtt=tommy_mosquitto
-  #   depends_on:
-  #     - tommy_mosquitto
+  tommy-presence-sensor:
+    build:
+      context: ./Sensors/presence_sensor
+      dockerfile: Dockerfile
+    container_name: tommy_presence_sensor
+    environment:
+      - mqtt=tommy_mosquitto
+    depends_on:
+      - tommy_mosquitto
 
-  # tommy-temp-sensor:
-  #   build:
-  #     context: ./Sensors/temp_sensor
-  #     dockerfile: Dockerfile
-  #   container_name: tommy_temp_sensor
-  #   environment:
-  #     - mqtt=tommy_mosquitto
-  #   depends_on:
-  #     - tommy_mosquitto
+  tommy-temp-sensor:
+    build:
+      context: ./Sensors/temp_sensor
+      dockerfile: Dockerfile
+    container_name: tommy_temp_sensor
+    environment:
+      - mqtt=tommy_mosquitto
+    depends_on:
+      - tommy_mosquitto
   
-  # tommy-gateway:
-  #   build:
-  #     context: ./Gateways
-  #     dockerfile: Dockerfile
-  #   container_name: tommy_gateway
-  #   environment:
-  #     - mqtt=tommy_mosquitto
-  #     - user=tommy
-  #     - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
-  #   depends_on:
-  #     - kafka
-  #     - tommy_mosquitto
+  tommy-gateway:
+    build:
+      context: ./Gateways
+      dockerfile: Dockerfile
+    container_name: tommy_gateway
+    environment:
+      - mqtt=tommy_mosquitto
+      - user=tommy
+      - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
+    depends_on:
+      - kafka
+      - tommy_mosquitto
 
-  # tommy-heat-pump:
-  #   build:
-  #     context: ./Actuators/heat_pump
-  #     dockerfile: Dockerfile
-  #   container_name: tommy-heatPump
-  #   environment:
-  #     - mqtt=tommy_mosquitto
-  #   depends_on:
-  #     - tommy_mosquitto
+  tommy-heat-pump:
+    build:
+      context: ./Actuators/heat_pump
+      dockerfile: Dockerfile
+    container_name: tommy-heatPump
+    environment:
+      - mqtt=tommy_mosquitto
+    depends_on:
+      - tommy_mosquitto
 
-  # tommy-light-bulb:
-  #   build:
-  #     context: ./Actuators/light_bulb
-  #     dockerfile: Dockerfile
-  #   container_name: tommy-lightBulb
-  #   environment:
-  #     - mqtt=tommy_mosquitto
-  #   depends_on:
-  #     - tommy_mosquitto
+  tommy-light-bulb:
+    build:
+      context: ./Actuators/light_bulb
+      dockerfile: Dockerfile
+    container_name: tommy-lightBulb
+    environment:
+      - mqtt=tommy_mosquitto
+    depends_on:
+      - tommy_mosquitto
