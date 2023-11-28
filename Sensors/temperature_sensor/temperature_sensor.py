@@ -8,7 +8,7 @@ import sys
 import signal
 
 #Environment variables
-mqtt_host = os.environ.get("mqtt")
+mqtt_host = os.environ.get("MQTT_HOST")
 kafka_url = os.environ.get("DOCKER_KAFKA_INIT_TOKEN")
 
 

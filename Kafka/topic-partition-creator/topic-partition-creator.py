@@ -1,9 +1,9 @@
 from kafka.admin import KafkaAdminClient, NewTopic
-from kafka import KafkaProducer
 from kafka.errors import TopicAlreadyExistsError
-import time
 import os
 kafka_url = os.environ.get("DOCKER_KAFKA_INIT_TOKEN")
+N = os.environ.get("RAW_DATA_PARTITIONS")
+M = os.environ.get("CLEAN_DATA_PARTITIONS")
 
 
 def create_topic(topic, partitions):
@@ -26,8 +26,8 @@ def create_topic(topic, partitions):
 
 
 if __name__ == "__main__":
-    # Crear los temas con la cantidad de particiones necesarias
-    create_topic("raw_data", 3)
-    create_topic("clean_data", 3)
 
+    # Crear los temas con la cantidad de particiones necesarias
+    create_topic("raw_data", int(N))
+    create_topic("clean_data", int(M))
     print("Fin del programa.")
