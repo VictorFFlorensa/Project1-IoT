@@ -122,7 +122,10 @@ services:
       - mqtt=albert_mosquitto
       - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
     depends_on:
-      - albert_mosquitto
+      kafka-topic-creator:
+        condition: service_completed_successfully
+      albert_mosquitto:
+        condition: service_started
 
   albert-temperature:
     build:
@@ -133,7 +136,10 @@ services:
       - mqtt=albert_mosquitto
       - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
     depends_on:
-      - albert_mosquitto
+      kafka-topic-creator:
+        condition: service_completed_successfully
+      albert_mosquitto:
+        condition: service_started
 
   albert-gateway:
     build:
@@ -145,8 +151,8 @@ services:
       - user=albert
       - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
     depends_on:
-      kafka:
-        condition: service_healthy
+      kafka-topic-creator:
+        condition: service_completed_successfully
       albert_mosquitto:
         condition: service_started
 
@@ -181,7 +187,10 @@ services:
       - mqtt=dakota_mosquitto
       - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
     depends_on:
-      - dakota_mosquitto
+      kafka-topic-creator:
+        condition: service_completed_successfully
+      dakota_mosquitto:
+        condition: service_started
 
   dakota-temperature:
     build:
@@ -192,7 +201,10 @@ services:
       - mqtt=dakota_mosquitto
       - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
     depends_on:
-      - dakota_mosquitto
+      kafka-topic-creator:
+        condition: service_completed_successfully
+      dakota_mosquitto:
+        condition: service_started
 
   dakota-gateway:
     build:
@@ -204,9 +216,9 @@ services:
       - user=dakota
       - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
     depends_on:
-      kafka:
-        condition: service_healthy
-      albert_mosquitto:
+      kafka-topic-creator:
+        condition: service_completed_successfully
+      dakota_mosquitto:
         condition: service_started
 
   dakota-heat-pump:

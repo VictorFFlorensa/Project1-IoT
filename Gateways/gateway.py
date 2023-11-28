@@ -2,7 +2,6 @@ import json
 from time import sleep
 from json import dumps
 from kafka import KafkaProducer
-from kafka.admin import KafkaAdminClient
 import signal
 import sys
 import paho.mqtt.subscribe as subscribe

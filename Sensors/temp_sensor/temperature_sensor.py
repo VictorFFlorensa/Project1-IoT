@@ -17,32 +17,12 @@ def on_exit(signum, frame):
     print("Programa detenido manualmente.")
     sys.exit(0)
 
-#Verificar conexión con el broker de Kafka
-def wait_for_kafka():
-    max_retries = 10
-    retries = 0
-    while retries < max_retries:
-        try:
-            producer = KafkaProducer(bootstrap_servers=[kafka_url])
-            producer.close()
-            break
-        except Exception as e:
-            print(f"Kafka no disponible, esperando... ({e})")
-            retries += 1
-            sleep(5)
-
-    if retries == max_retries:
-        print("No se pudo conectar a Kafka después de varios intentos. Saliendo...")
-        exit(1)
-
 def temperature_sensor():
     return random.uniform(15, 30)
 
 
 if __name__ == "__main__":
     signal.signal(signal.SIGTERM, on_exit)
-    #Wait for kafka to start sending messages by mqtt
-    wait_for_kafka()
     sleep(5)
 
     message_id = 0
