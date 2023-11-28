@@ -60,23 +60,23 @@ services:
       - kafka
       - influxdb
     deploy:
-        replicas: 3
+      replicas: 3
 
   clean-processor:
     build:
       context: ./Kafka/clean-processor
       dockerfile: Dockerfile
-    container_name: kafka-clean
     environment:
       - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
     depends_on:
       - kafka
+    deploy:
+      replicas: 3
 
   actuator-processor:
     build:
       context: ./Kafka/actuate-processor
       dockerfile: Dockerfile
-    container_name: kafka-actuate
     environment:
       - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
       - mqtt_albert=albert_mosquitto
@@ -86,6 +86,19 @@ services:
     depends_on:
       - kafka
       - albert_mosquitto
+    deploy:
+      replicas: 3
+
+
+  kafka-topic-creator:
+    build:
+      context: ./Kafka/topic-partition-creator
+      dockerfile: Dockerfile
+    container_name: kafka-topic-creator
+    environment:
+      - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
+    depends_on:
+      - kafka
     
 
   #-------------------------------------------------Albert----------------------------------------------------------
@@ -97,6 +110,7 @@ services:
     container_name: albert_presence
     environment:
       - mqtt=albert_mosquitto
+      - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
     depends_on:
       - albert_mosquitto
 
@@ -107,6 +121,7 @@ services:
     container_name: albert_temperature
     environment:
       - mqtt=albert_mosquitto
+      - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
     depends_on:
       - albert_mosquitto
 
@@ -152,6 +167,7 @@ services:
     container_name: dakota_presence
     environment:
       - mqtt=dakota_mosquitto
+      - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
     depends_on:
       - dakota_mosquitto
 
@@ -162,6 +178,7 @@ services:
     container_name: dakota_temp_sensor
     environment:
       - mqtt=dakota_mosquitto
+      - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
     depends_on:
       - dakota_mosquitto
 
