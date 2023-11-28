@@ -8,8 +8,8 @@ import paho.mqtt.subscribe as subscribe
 import os
 
 #Import environment variables
-host = os.environ.get("mqtt")
-name = os.environ.get("user")
+host = os.environ.get("MQTT_HOST")
+name = os.environ.get("USER")
 kafka_url = os.environ.get("DOCKER_KAFKA_INIT_TOKEN")
 
 #Manejar finalización del programa
