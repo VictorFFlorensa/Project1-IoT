@@ -16,9 +16,15 @@ services:
 
   tiffany_mosquitto:
     image: eclipse-mosquitto:1.6.12
+    volumes:
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ./mosquitto/passwords.txt:/mosquitto/config/passwords.txt
 
   tommy_mosquitto:
     image: eclipse-mosquitto:1.6.12
+    volumes:
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ./mosquitto/passwords.txt:/mosquitto/config/passwords.txt
 
   zookeeper:
     image: docker.io/bitnami/zookeeper:3.8
@@ -61,6 +67,7 @@ services:
       - DOCKER_INFLUXDB_INIT_URL=http://influxdb:8086
       - DOCKER_INFLUXDB_INIT_USERNAME=admin
       - DOCKER_INFLUXDB_INIT_PASSWORD=1234567890
+      - DOCKER_INFLUXDB_INIT_TOKEN=ZlGqZ7SUhQksJLjOZNkJWpk-rPPeS857BQkbUiI3a8p9HdJYOCpJDNgh1KR6t3oRKmlR53_rmKepgBRbM1SE7g==
       - DOCKER_KAFKA_URL=kafka:9092
       - GROUP_ID=save-consumer-group
     depends_on:
@@ -101,7 +108,7 @@ services:
     build:
       context: ./Sensors/presence_sensor
       dockerfile: Dockerfile
-    container_name: albert_presence
+    container_name: albert_presence_sensor
     environment:
       - mqtt=albert_mosquitto
     depends_on:
@@ -134,7 +141,7 @@ services:
     build:
       context: ./Actuators/heat_pump
       dockerfile: Dockerfile
-    container_name: albert-heatPump
+    container_name: albert_heat_pump
     environment:
       - mqtt=albert_mosquitto
     depends_on:
@@ -144,7 +151,7 @@ services:
     build:
       context: ./Actuators/light_bulb
       dockerfile: Dockerfile
-    container_name: albert-lightBulb
+    container_name: albert_light_bulb
     environment:
       - mqtt=albert_mosquitto
     depends_on:
@@ -156,7 +163,7 @@ services:
     build:
       context: ./Sensors/presence_sensor
       dockerfile: Dockerfile
-    container_name: dakota_presence
+    container_name: dakota_presence_sensor
     environment:
       - mqtt=dakota_mosquitto
     depends_on:
@@ -189,7 +196,7 @@ services:
     build:
       context: ./Actuators/heat_pump
       dockerfile: Dockerfile
-    container_name: dakota-heatPump
+    container_name: dakota_heat_pump
     environment:
       - mqtt=dakota_mosquitto
     depends_on:
@@ -199,7 +206,7 @@ services:
     build:
       context: ./Actuators/light_bulb
       dockerfile: Dockerfile
-    container_name: dakota-lightBulb
+    container_name: dakota_light_bulb
     environment:
       - mqtt=dakota_mosquitto
     depends_on:
@@ -244,7 +251,7 @@ services:
     build:
       context: ./Actuators/heat_pump
       dockerfile: Dockerfile
-    container_name: tiffany-heatPump
+    container_name: tiffany_heat_pump
     environment:
       - mqtt=tiffany_mosquitto
     depends_on:
@@ -254,7 +261,7 @@ services:
     build:
       context: ./Actuators/light_bulb
       dockerfile: Dockerfile
-    container_name: tiffany-lightBulb
+    container_name: tiffany_light_Bulb
     environment:
       - mqtt=tiffany_mosquitto
     depends_on:
@@ -299,7 +306,7 @@ services:
     build:
       context: ./Actuators/heat_pump
       dockerfile: Dockerfile
-    container_name: tommy-heatPump
+    container_name: tommy_heat_pump
     environment:
       - mqtt=tommy_mosquitto
     depends_on:
@@ -309,7 +316,7 @@ services:
     build:
       context: ./Actuators/light_bulb
       dockerfile: Dockerfile
-    container_name: tommy-lightBulb
+    container_name: tommy_light_bulb
     environment:
       - mqtt=tommy_mosquitto
     depends_on:

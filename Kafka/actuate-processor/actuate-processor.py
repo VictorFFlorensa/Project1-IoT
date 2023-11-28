@@ -6,8 +6,8 @@ import os
 import signal
 import sys
 
-mqtt_username = "user1"
-mqtt_password = "password1"
+mqtt_username = "user-gateway"
+mqtt_password = "pw-gateway"
 
 # Manejar finalización del programa
 def on_exit(signum, frame):
@@ -35,10 +35,28 @@ mqtt_host = {
     'tommy': tommy_host
 }
 
+# usernames = {
+#     -
+# }
+
+# passwords = {
+#     -
+# }
+
 mqtt_clients = {
     user: mqtt.Client()
     for user in users
 }
+# #TODO
+# mqtt_username ={
+#     username: 
+#     for username in usernames
+# }
+# #TODO
+# mqtt_password = {
+#     pw: 
+#     for pw in passwords
+# }
 
 for user in users:
     client = mqtt_clients[user]

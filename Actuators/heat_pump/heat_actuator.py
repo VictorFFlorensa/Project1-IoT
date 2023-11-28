@@ -5,8 +5,8 @@ import json
 import signal
 import sys
 
-mqtt_username = "user1"
-mqtt_password = "password1"
+mqtt_username = "user-heat-actuator"
+mqtt_password = "pw-heat-actuator"
 
 # Manejar finalización del programa
 def on_exit(signum, frame):

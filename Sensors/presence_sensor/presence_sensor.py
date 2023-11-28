@@ -8,8 +8,9 @@ import sys
 from time import sleep
 
 host = os.environ.get("mqtt")
-mqtt_username = "user1"
-mqtt_password = "password1"
+
+mqtt_username = "user-presence-sensor"
+mqtt_password = "pw-presence-sensor"
 
 # Manejar finalización del programa
 def on_exit(signum, frame):

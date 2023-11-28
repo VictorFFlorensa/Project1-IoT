@@ -1,7 +1,7 @@
 import json
 from time import sleep
 from json import dumps
-from kafka import KafkaProducer
+from Kafka import KafkaProducer
 import signal
 import sys
 import paho.mqtt.client as mqtt
@@ -10,8 +10,9 @@ import os
 host = os.environ.get("mqtt")
 name = os.environ.get("user")
 kafka_url = os.environ.get("DOCKER_KAFKA_INIT_TOKEN")
-mqtt_username = "user1"
-mqtt_password = "password1"
+
+mqtt_username = "user-gateway"
+mqtt_password = "pw-gateway"
 
 # Manejar finalización del programa
 def on_exit(signum, frame):
