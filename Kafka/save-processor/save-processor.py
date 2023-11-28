@@ -12,8 +12,9 @@ import sys
 bucket = os.environ.get("DOCKER_INFLUXDB_INIT_BUCKET")
 org = os.environ.get("DOCKER_INFLUXDB_INIT_ORG")
 influx_url = os.environ.get("DOCKER_INFLUXDB_INIT_URL")
-token = os.environ.get("DOCKER_INFLUXDB_INIT_TOKEN")
-kafka_url = os.environ.get("DOCKER_KAFKA_INIT_TOKEN")
+username = os.environ.get("DOCKER_INFLUXDB_INIT_USERNAME")
+password = os.environ.get("DOCKER_INFLUXDB_INIT_PASSWORD")
+kafka_url = os.environ.get("DOCKER_KAFKA_URL")
 
 #Manejar la finalización del programa
 def on_exit(signum, frame):
@@ -30,7 +31,7 @@ if __name__ == "__main__":
     consumer = KafkaConsumer(*topics, bootstrap_servers=[kafka_url], value_deserializer=lambda x: loads(x.decode('utf-8')), group_id="save")
 
     #Conectar a InfluxDB
-    client = InfluxDBClient(url=influx_url, token=token, org=org)
+    client = InfluxDBClient(url=influx_url, username=username, password=password, org=org)
     write_api = client.write_api(write_options=SYNCHRONOUS)
 
     print("Starting...")
@@ -53,10 +54,3 @@ if __name__ == "__main__":
 
         # Mostrar por pantalla confirmación de envío
         print("Guardados los datos en InfluxDB: ", message.value)
-
-
-
-
-
-
-

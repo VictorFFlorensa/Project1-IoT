@@ -2,10 +2,21 @@ from kafka import KafkaConsumer, KafkaProducer
 from kafka.admin import KafkaAdminClient
 import json
 from time import sleep
-import paho.mqtt.publish as publish
+import paho.mqtt.client as mqtt
 import os
 import signal
 import sys
+
+mqtt_username = "user-gateway"
+mqtt_password = "pw-gateway"
+
+# Manejar finalización del programa
+def on_exit(signum, frame):
+    print("Programa detenido manualmente.")
+    client.disconnect()
+    sys.exit(0)
+
+signal.signal(signal.SIGTERM, on_exit)
 
 #Environment variables
 kafka_url = os.environ.get("DOCKER_KAFKA_INIT_TOKEN")
@@ -19,33 +30,70 @@ def on_exit(signum, frame):
     print("Programa detenido manualmente.")
     sys.exit(0)
 
+users = ['albert',
+        'tiffany',
+        'dakota',
+        'tommy']
 
-if __name__ == "__main__":
-    signal.signal(signal.SIGTERM, on_exit)
+mqtt_host = {
+    'albert': albert_host,
+    'tiffany': tiffany_host,
+    'dakota': dakota_host,
+    'tommy': tommy_host
+}
 
-    #Lista de tópicos a los que suscribirse
-    consumer = KafkaConsumer('clean_data', bootstrap_servers=kafka_url, value_deserializer=json.loads, group_id="actuate")
+# usernames = {
+#     -
+# }
+
+# passwords = {
+#     -
+# }
+
+mqtt_clients = {
+    user: mqtt.Client()
+    for user in users
+}
+# #TODO
+# mqtt_username ={
+#     username: 
+#     for username in usernames
+# }
+# #TODO
+# mqtt_password = {
+#     pw: 
+#     for pw in passwords
+# }
+
+for user in users:
+    client = mqtt_clients[user]
+    client.username_pw_set(mqtt_username, password = mqtt_password)
+    host = mqtt_host[user]
+    client.connect(host, 1883, 60)
+
+# Espera 10 segundos para dar tiempo a que Kafka se inicie
+print("Esperando a que Kafka se inicie...")
+sleep(10)
+
+
+signal.signal(signal.SIGTERM, on_exit)
+
+#Lista de tópicos a los que suscribirse
+consumer = KafkaConsumer('clean_data', bootstrap_servers=kafka_url, value_deserializer=json.loads, group_id="actuate")
     
-    print("Starting...")
-    for message in consumer:
+print("Starting...")
 
-        data = message.value
-        user = data.get('user')
-        mqtt_host = {
-            'albert': albert_host,
-            'tiffany': tiffany_host,
-            'dakota': dakota_host,
-            'tommy': tommy_host
-        }.get(user)
+for message in consumer:
+    data = message.value
+    user = data.get('user')
+    client = mqtt_clients[user]
 
-        if 'temperature' in data:
-            topic = 'heat-pump'
-        else:
-            topic = 'light-bulb'
+    if 'temperature' in data:
+        topic = 'heat-pump'
+    else:
+        topic = 'light-bulb'
 
-        #Publish 
-        payload = json.dumps(data)
-        publish.single(topic, payload, hostname=mqtt_host)
-        print("Enviado por %s %s" % (topic, data))
-
-    
+    #Publish 
+    payload = json.dumps(data)
+    client.publish(topic, payload)
+    print("Enviado por %s %s" % (topic, data))
