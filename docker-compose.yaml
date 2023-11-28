@@ -59,8 +59,9 @@ services:
       - DOCKER_INFLUXDB_INIT_BUCKET=iotproject
       - DOCKER_INFLUXDB_INIT_ORG=udl
       - DOCKER_INFLUXDB_INIT_URL=http://influxdb:8086
-      - DOCKER_INFLUXDB_INIT_TOKEN=Ry-ExejcbAAGmVO3azDAZ5eZo8Ck_ZIot3kAyHElvbgxvGQrZOMe29CVYShptOVhM2ss3zASkoRRDB9RX8L67Q==
-      - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=1234567890
+      - DOCKER_KAFKA_URL=kafka:9092
       - GROUP_ID=save-consumer-group
     depends_on:
       - kafka
