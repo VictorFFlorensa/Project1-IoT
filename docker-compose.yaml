@@ -30,6 +30,11 @@ services:
       - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
     depends_on:
       - zookeeper
+    healthcheck:
+      test: ["CMD", "kafka-topics.sh", "--bootstrap-server", "kafka:9092", "--list"]
+      interval: 2s
+      timeout: 25s
+      retries: 15
 
   influxdb:
     image: influxdb:2.4.0
@@ -57,8 +62,10 @@ services:
       - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
       - GROUP_ID=save-consumer-group
     depends_on:
-      - kafka
-      - influxdb
+      kafka:
+        condition: service_healthy
+      influxdb:
+        condition: service_started
     deploy:
       replicas: 3
 
@@ -69,7 +76,8 @@ services:
     environment:
       - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
     depends_on:
-      - kafka
+      kafka:
+        condition: service_healthy
     deploy:
       replicas: 3
 
@@ -84,8 +92,10 @@ services:
       - mqtt_dakota=dakota_mosquitto
       - mqtt_tommy=tommy_mosquitto
     depends_on:
-      - kafka
-      - albert_mosquitto
+      kafka:
+        condition: service_healthy
+      albert_mosquitto:
+        condition: service_started
     deploy:
       replicas: 3
 
@@ -98,8 +108,8 @@ services:
     environment:
       - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
     depends_on:
-      - kafka
-    
+      kafka:
+        condition: service_healthy
 
   #-------------------------------------------------Albert----------------------------------------------------------
   
@@ -135,8 +145,10 @@ services:
       - user=albert
       - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
     depends_on:
-      - kafka
-      - albert_mosquitto
+      kafka:
+        condition: service_healthy
+      albert_mosquitto:
+        condition: service_started
 
   albert-heat-pump:
     build:
@@ -192,8 +204,10 @@ services:
       - user=dakota
       - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
     depends_on:
-      - kafka
-      - dakota_mosquitto
+      kafka:
+        condition: service_healthy
+      albert_mosquitto:
+        condition: service_started
 
   dakota-heat-pump:
     build:

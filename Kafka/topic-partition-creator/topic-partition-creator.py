@@ -24,28 +24,8 @@ def create_topic(topic, partitions):
         print(f"Tema '{topic}' ya existe. No es necesario crearlo nuevamente.")
 
 
-def wait_for_kafka():
-    max_retries = 10
-    retries = 0
-    while retries < max_retries:
-        try:
-            producer = KafkaProducer(bootstrap_servers=[kafka_url])
-            producer.close()
-            break
-        except Exception as e:
-            print(f"Kafka no disponible, esperando... ({e})")
-            retries += 1
-            time.sleep(5)
-
-    if retries == max_retries:
-        print("No se pudo conectar a Kafka después de varios intentos. Saliendo...")
-        exit(1)
-
 
 if __name__ == "__main__":
-    # Esperar a que Kafka esté disponible antes de intentar crear temas
-    wait_for_kafka()
-
     # Crear los temas con la cantidad de particiones necesarias
     create_topic("raw_data", 3)
     create_topic("clean_data", 3)
