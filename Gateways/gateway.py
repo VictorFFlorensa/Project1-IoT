@@ -1,7 +1,7 @@
 import json
 from time import sleep
 from json import dumps
-from Kafka import KafkaProducer
+from kafka import KafkaProducer
 import signal
 import sys
 import paho.mqtt.client as mqtt
