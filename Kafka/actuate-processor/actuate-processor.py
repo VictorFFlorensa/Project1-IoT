@@ -1,5 +1,4 @@
-from kafka import KafkaConsumer, KafkaProducer
-from kafka.admin import KafkaAdminClient
+from kafka import KafkaConsumer
 import json
 from time import sleep
 import paho.mqtt.client as mqtt
@@ -20,10 +19,10 @@ signal.signal(signal.SIGTERM, on_exit)
 
 #Environment variables
 kafka_url = os.environ.get("DOCKER_KAFKA_INIT_TOKEN")
-albert_host = os.environ.get("mqtt_albert")
-tiffany_host = os.environ.get("mqtt_tiffany")
-dakota_host = os.environ.get("mqtt_dakota")
-tommy_host = os.environ.get("mqtt_tommy")
+albert_host = os.environ.get("MQTT_ALBERT")
+tiffany_host = os.environ.get("MQTT_TIFFANY")
+dakota_host = os.environ.get("MQTT_DAKOTA")
+tommy_host = os.environ.get("MQTT_TOMMY")
 
 # Manejar finalización del programa
 def on_exit(signum, frame):

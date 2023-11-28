@@ -5,6 +5,9 @@ import json
 import signal
 import sys
 
+#Environment Variables
+host = os.environ.get("MQTT_HOST")
+
 mqtt_username = "user-heat-actuator"
 mqtt_password = "pw-heat-actuator"
 
@@ -29,6 +32,11 @@ def on_connect(client : mqtt.Client, userdata, flags, rc):
     print(f"Conectado con código {rc}")
     client.subscribe(topic, 0)
 
+client = mqtt.Client()
+client.username_pw_set(mqtt_username, password = mqtt_password)
+client.on_connect = on_connect
+client.on_message = on_message_print
+
 def on_message_print(client, userdata, message):
     global current_temperature
     payload = message.payload.decode('utf-8')
@@ -46,12 +54,9 @@ def on_message_print(client, userdata, message):
     else:
         raise ValueError("Received temperature is None. Cannot process.")
 
-client = mqtt.Client()
-client.username_pw_set(mqtt_username, password = mqtt_password)
-client.on_connect = on_connect
-client.on_message = on_message_print
-
-print("Starting...")
+            
+    signal.signal(signal.SIGTERM, on_exit)
+    print("Starting...")
 
 client.connect(host, 1883, 60)
 client.loop_forever()

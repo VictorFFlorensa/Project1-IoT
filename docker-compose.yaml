@@ -15,16 +15,34 @@ services:
       - ./mosquitto/passwords.txt:/mosquitto/config/passwords.txt
 
   tiffany_mosquitto:
+    container_name: tiffany_mosquitto
     image: eclipse-mosquitto:1.6.12
     volumes:
       - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
       - ./mosquitto/passwords.txt:/mosquitto/config/passwords.txt
 
   tommy_mosquitto:
+    container_name: tommy_mosquitto
     image: eclipse-mosquitto:1.6.12
     volumes:
       - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
       - ./mosquitto/passwords.txt:/mosquitto/config/passwords.txt
+
+
+  influxdb:
+    image: influxdb:2.4.0
+    ports:
+      - "8086:8086"
+    container_name: influxDB
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=1234567890
+      - DOCKER_INFLUXDB_INIT_ORG=udl
+      - DOCKER_INFLUXDB_INIT_BUCKET=iotproject
+    volumes:
+      - ./influxdb_docker/influx-data:/var/lib/influxdb2
+
 
   zookeeper:
     image: docker.io/bitnami/zookeeper:3.8
@@ -47,21 +65,9 @@ services:
       interval: 2s
       timeout: 25s
       retries: 15
-
-  influxdb:
-    image: influxdb:2.4.0
-    ports:
-      - "8086:8086"
-    container_name: influxDB
-    environment:
-      - DOCKER_INFLUXDB_INIT_MODE=setup
-      - DOCKER_INFLUXDB_INIT_USERNAME=admin
-      - DOCKER_INFLUXDB_INIT_PASSWORD=1234567890
-      - DOCKER_INFLUXDB_INIT_ORG=udl
-      - DOCKER_INFLUXDB_INIT_BUCKET=iotproject
-    volumes:
-      - ./influxdb_docker/influx-data:/var/lib/influxdb2
       
+  #--------------------------------------------- Kafka processors ------------------------------------------------------
+
   save-processor:
     build:
       context: ./Kafka/save-processor
@@ -81,7 +87,8 @@ services:
       influxdb:
         condition: service_started
     deploy:
-      replicas: 3
+      replicas: 6
+
 
   clean-processor:
     build:
@@ -95,16 +102,17 @@ services:
     deploy:
       replicas: 3
 
+
   actuator-processor:
     build:
       context: ./Kafka/actuate-processor
       dockerfile: Dockerfile
     environment:
       - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
-      - mqtt_albert=albert_mosquitto
-      - mqtt_tiffany=tiffany_mosquitto
-      - mqtt_dakota=dakota_mosquitto
-      - mqtt_tommy=tommy_mosquitto
+      - MQTT_ALBERT=albert_mosquitto
+      - MQTT_TIFFANY=tiffany_mosquitto
+      - MQTT_DAKOTA=dakota_mosquitto
+      - MQTT_TOMMY=tommy_mosquitto
     depends_on:
       kafka-topic-creator:
         condition: service_completed_successfully
@@ -121,6 +129,8 @@ services:
     container_name: kafka-topic-creator
     environment:
       - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
+      - CLEAN_DATA_PARTITIONS=6
+      - RAW_DATA_PARTITIONS=6
     depends_on:
       kafka:
         condition: service_healthy
@@ -133,7 +143,7 @@ services:
       dockerfile: Dockerfile
     container_name: albert_presence_sensor
     environment:
-      - mqtt=albert_mosquitto
+      - MQTT_HOST=albert_mosquitto
       - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
     depends_on:
       kafka-topic-creator:
@@ -143,11 +153,11 @@ services:
 
   albert-temperature:
     build:
-      context: ./Sensors/temp_sensor
+      context: ./Sensors/temperature_sensor
       dockerfile: Dockerfile
     container_name: albert_temp_sensor
     environment:
-      - mqtt=albert_mosquitto
+      - MQTT_HOST=albert_mosquitto
       - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
     depends_on:
       kafka-topic-creator:
@@ -161,8 +171,8 @@ services:
       dockerfile: Dockerfile
     container_name: albert_gateway
     environment:
-      - mqtt=albert_mosquitto
-      - user=albert
+      - MQTT_HOST=albert_mosquitto
+      - USER=albert
       - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
     depends_on:
       kafka-topic-creator:
@@ -176,7 +186,7 @@ services:
       dockerfile: Dockerfile
     container_name: albert_heat_pump
     environment:
-      - mqtt=albert_mosquitto
+      - MQTT_HOST=albert_mosquitto
     depends_on:
       - albert_mosquitto
 
@@ -186,7 +196,7 @@ services:
       dockerfile: Dockerfile
     container_name: albert_light_bulb
     environment:
-      - mqtt=albert_mosquitto
+      - MQTT_HOST=albert_mosquitto
     depends_on:
       - albert_mosquitto
 
@@ -198,7 +208,7 @@ services:
       dockerfile: Dockerfile
     container_name: dakota_presence_sensor
     environment:
-      - mqtt=dakota_mosquitto
+      - MQTT_HOST=dakota_mosquitto
       - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
     depends_on:
       kafka-topic-creator:
@@ -208,11 +218,11 @@ services:
 
   dakota-temperature:
     build:
-      context: ./Sensors/temp_sensor
+      context: ./Sensors/temperature_sensor
       dockerfile: Dockerfile
-    container_name: dakota_temp_sensor
+    container_name: dakota_temperature
     environment:
-      - mqtt=dakota_mosquitto
+      - MQTT_HOST=dakota_mosquitto
       - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
     depends_on:
       kafka-topic-creator:
@@ -226,8 +236,8 @@ services:
       dockerfile: Dockerfile
     container_name: dakota_gateway
     environment:
-      - mqtt=dakota_mosquitto
-      - user=dakota
+      - MQTT_HOST=dakota_mosquitto
+      - USER=dakota
       - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
     depends_on:
       kafka-topic-creator:
@@ -241,7 +251,7 @@ services:
       dockerfile: Dockerfile
     container_name: dakota_heat_pump
     environment:
-      - mqtt=dakota_mosquitto
+      - MQTT_HOST=dakota_mosquitto
     depends_on:
       - dakota_mosquitto
 
@@ -251,31 +261,39 @@ services:
       dockerfile: Dockerfile
     container_name: dakota_light_bulb
     environment:
-      - mqtt=dakota_mosquitto
+      - MQTT_HOST=dakota_mosquitto
     depends_on:
       - dakota_mosquitto
 
   #-------------------------------------------------Tiffany----------------------------------------------------------
 
-  tiffany-presence-sensor:
+  tiffany-presence:
     build:
       context: ./Sensors/presence_sensor
       dockerfile: Dockerfile
-    container_name: tiffany_presence_sensor
+    container_name: tiffany_presence
     environment:
-      - mqtt=tiffany_mosquitto
+      - MQTT_HOST=tiffany_mosquitto
+      - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
     depends_on:
-      - tiffany_mosquitto
+      kafka-topic-creator:
+        condition: service_completed_successfully
+      tiffany_mosquitto:
+        condition: service_started
 
-  tiffany-temp-sensor:
+  tiffany-temperature:
     build:
-      context: ./Sensors/temp_sensor
+      context: ./Sensors/temperature_sensor
       dockerfile: Dockerfile
-    container_name: tiffany_temp_sensor
+    container_name: tiffany_temperature
     environment:
-      - mqtt=tiffany_mosquitto
+      - MQTT_HOST=tiffany_mosquitto
+      - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
     depends_on:
-      - tiffany_mosquitto
+      kafka-topic-creator:
+        condition: service_completed_successfully
+      tiffany_mosquitto:
+        condition: service_started
 
   tiffany-gateway:
     build:
@@ -283,8 +301,8 @@ services:
       dockerfile: Dockerfile
     container_name: tiffany_gateway
     environment:
-      - mqtt=tiffany_mosquitto
-      - user=tiffany
+      - MQTT_HOST=tiffany_mosquitto
+      - USER=tiffany
       - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
     depends_on:
       kafka-topic-creator:
@@ -296,9 +314,9 @@ services:
     build:
       context: ./Actuators/heat_pump
       dockerfile: Dockerfile
-    container_name: tiffany_heat_pump
+    container_name: tiffany-heatPump
     environment:
-      - mqtt=tiffany_mosquitto
+      - MQTT_HOST=tiffany_mosquitto
     depends_on:
       - tiffany_mosquitto
 
@@ -306,42 +324,51 @@ services:
     build:
       context: ./Actuators/light_bulb
       dockerfile: Dockerfile
-    container_name: tiffany_light_Bulb
+    container_name: tiffany-lightBulb
     environment:
-      - mqtt=tiffany_mosquitto
+      - MQTT_HOST=tiffany_mosquitto
     depends_on:
       - tiffany_mosquitto
 
   #-------------------------------------------------Tommy----------------------------------------------------------
 
-  tommy-presence-sensor:
+  tommy-presence:
     build:
       context: ./Sensors/presence_sensor
       dockerfile: Dockerfile
-    container_name: tommy_presence_sensor
+    container_name: tommy_presence
     environment:
-      - mqtt=tommy_mosquitto
+      - MQTT_HOST=tommy_mosquitto
+      - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
     depends_on:
-      - tommy_mosquitto
+      kafka-topic-creator:
+        condition: service_completed_successfully
+      tommy_mosquitto:
+        condition: service_started
 
-  tommy-temp-sensor:
+  tommy-temperature:
     build:
-      context: ./Sensors/temp_sensor
+      context: ./Sensors/temperature_sensor
       dockerfile: Dockerfile
-    container_name: tommy_temp_sensor
+    container_name: tommy_temperature
     environment:
-      - mqtt=tommy_mosquitto
+      - MQTT_HOST=tommy_mosquitto
+      - USER=tommy
+      - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
     depends_on:
-      - tommy_mosquitto
-  
+      kafka-topic-creator:
+        condition: service_completed_successfully
+      tommy_mosquitto:
+        condition: service_started
+
   tommy-gateway:
     build:
       context: ./Gateways
       dockerfile: Dockerfile
     container_name: tommy_gateway
     environment:
-      - mqtt=tommy_mosquitto
-      - user=tommy
+      - MQTT_HOST=tommy_mosquitto
+      - USER=tommy
       - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
     depends_on:
       kafka-topic-creator:
@@ -353,9 +380,9 @@ services:
     build:
       context: ./Actuators/heat_pump
       dockerfile: Dockerfile
-    container_name: tommy_heat_pump
+    container_name: tommy-heatPump
     environment:
-      - mqtt=tommy_mosquitto
+      - MQTT_HOST=tommy_mosquitto
     depends_on:
       - tommy_mosquitto
 
@@ -363,8 +390,8 @@ services:
     build:
       context: ./Actuators/light_bulb
       dockerfile: Dockerfile
-    container_name: tommy_light_bulb
+    container_name: tommy-lightBulb
     environment:
-      - mqtt=tommy_mosquitto
+      - MQTT_HOST=tommy_mosquitto
     depends_on:
       - tommy_mosquitto

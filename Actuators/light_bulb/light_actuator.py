@@ -5,6 +5,9 @@ import json
 import signal
 import sys
 
+#Environment Variables
+host = os.environ.get("MQTT_HOST")
+
 mqtt_username = "user-light-actuator"
 mqtt_password = "pw-light-actuator"
 
@@ -51,6 +54,7 @@ client.username_pw_set(mqtt_username, password = mqtt_password)
 client.on_connect = on_connect
 client.on_message = on_message_actuate_light_bulb
 
+signal.signal(signal.SIGTERM, on_exit)
 print("Starting...")
 
 client.connect(host, 1883, 60)

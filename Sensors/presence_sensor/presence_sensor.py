@@ -8,7 +8,7 @@ import sys
 from time import sleep
 
 #Environment variables
-host = os.environ.get("mqtt")
+host = os.environ.get("MQTT_HOST")
 kafka_url = os.environ.get("DOCKER_KAFKA_INIT_TOKEN")
 mqtt_username = "user-presence-sensor"
 mqtt_password = "pw-presence-sensor"
