@@ -1,5 +1,4 @@
 import paho.mqtt.publish as publish
-from kafka import KafkaProducer
 import random
 import os
 import time
@@ -12,10 +11,12 @@ import signal
 mqtt_host = os.environ.get("mqtt")
 kafka_url = os.environ.get("DOCKER_KAFKA_INIT_TOKEN")
 
+
 #Manejar finalización del programa
 def on_exit(signum, frame):
     print("Programa detenido manualmente.")
     sys.exit(0)
+
 
 def temperature_sensor():
     return random.uniform(15, 30)
