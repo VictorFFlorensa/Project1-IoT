@@ -1,4 +1,4 @@
-import paho.mqtt.subscribe as subscribe
+import paho.mqtt.client as mqtt
 import os
 from time import sleep
 import json
@@ -8,12 +8,31 @@ import sys
 #Environment Variables
 host = os.environ.get("MQTT_HOST")
 
+mqtt_username = "user-light-actuator"
+mqtt_password = "pw-light-actuator"
+
 # Manejar finalización del programa
 def on_exit(signum, frame):
     print("Programa detenido manualmente.")
+    client.disconnect()
     sys.exit(0)
 
-def on_message_print(client, userdata, message):
+signal.signal(signal.SIGTERM, on_exit)
+
+host = os.environ.get("mqtt")
+
+# Espera 10 segundos para dar tiempo a que Kafka se inicie
+print("Esperando a que Kafka se inicie...")
+sleep(10)
+
+light_bulb_state = 0
+topic = "light-bulb"
+
+def on_connect(client : mqtt.Client, userdata, flags, rc):
+    print(f"Conectado con código {rc}")
+    client.subscribe(topic, 0)
+
+def on_message_actuate_light_bulb(client, userdata, message):
     global light_bulb_state
     payload = message.payload.decode('utf-8')
     data = json.loads(payload)
@@ -30,15 +49,13 @@ def on_message_print(client, userdata, message):
     else:
         raise ValueError("Received presence value is None. Cannot process.")
 
+client = mqtt.Client()
+client.username_pw_set(mqtt_username, password = mqtt_password)
+client.on_connect = on_connect
+client.on_message = on_message_actuate_light_bulb
 
+signal.signal(signal.SIGTERM, on_exit)
+print("Starting...")
 
-if __name__ == "__main__":
-    signal.signal(signal.SIGTERM, on_exit)
-    print("Starting...")
-
-    light_bulb_state = 0
-    topic = "light-bulb"
-    subscribe.callback(on_message_print, topic, hostname=host)
-
-    while True:
-        sleep(1)
+client.connect(host, 1883, 60)
+client.loop_forever()
