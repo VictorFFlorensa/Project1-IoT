@@ -1,8 +1,3 @@
-First time openning the project you need to change the influxDB Token key.
+Run the project with the following command:
 
-Start with $docker compose up -d --build
-
-Open http://influxdb:8086 on browser:
-Load your data -> Client Libraries -> Python -> Initialize the Client //here you will find the token.
-
-On: docker-compose.yaml -> save-processor replace the new authentication key.
+$docker compose up -d --build

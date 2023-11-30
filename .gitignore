@@ -1,1 +1,2 @@
-/influxdb_docker/
+# Ignore InfluxDB Docker folder
+influxdb_docker/
