@@ -3,31 +3,19 @@ services:
   albert_mosquitto:
     container_name: albert_mosquitto
     image: eclipse-mosquitto:1.6.12
-    volumes:
-      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
-      - ./mosquitto/passwords.txt:/mosquitto/config/passwords.txt
 
   dakota_mosquitto:
     container_name: dakota_mosquitto
     image: eclipse-mosquitto:1.6.12
-    volumes:
-      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
-      - ./mosquitto/passwords.txt:/mosquitto/config/passwords.txt
 
   tiffany_mosquitto:
     container_name: tiffany_mosquitto
     image: eclipse-mosquitto:1.6.12
-    volumes:
-      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
-      - ./mosquitto/passwords.txt:/mosquitto/config/passwords.txt
 
   tommy_mosquitto:
     container_name: tommy_mosquitto
     image: eclipse-mosquitto:1.6.12
-    volumes:
-      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
-      - ./mosquitto/passwords.txt:/mosquitto/config/passwords.txt
-
+    
 
   influxdb:
     image: influxdb:2.4.0
