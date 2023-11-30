@@ -13,6 +13,7 @@ bucket = os.environ.get("DOCKER_INFLUXDB_INIT_BUCKET")
 org = os.environ.get("DOCKER_INFLUXDB_INIT_ORG")
 influx_url = os.environ.get("DOCKER_INFLUXDB_INIT_URL")
 token = os.environ.get("DOCKER_INFLUXDB_INIT_TOKEN")
+print(token)
 kafka_url = os.environ.get("DOCKER_KAFKA_INIT_TOKEN")
 
 #Manejar la finalización del programa

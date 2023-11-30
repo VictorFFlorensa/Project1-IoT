@@ -28,6 +28,7 @@ services:
       - DOCKER_INFLUXDB_INIT_PASSWORD=1234567890
       - DOCKER_INFLUXDB_INIT_ORG=udl
       - DOCKER_INFLUXDB_INIT_BUCKET=iotproject
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=1234
     volumes:
       - ./influxdb_docker/influx-data:/var/lib/influxdb2
 
@@ -64,7 +65,7 @@ services:
       - DOCKER_INFLUXDB_INIT_BUCKET=iotproject
       - DOCKER_INFLUXDB_INIT_ORG=udl
       - DOCKER_INFLUXDB_INIT_URL=http://influxdb:8086
-      - DOCKER_INFLUXDB_INIT_TOKEN=ma3qcICYJpauFY26dwXIm-3FbHUgCkTATxIEoCys0pkzYbEUwqt5NC7v7XdncqW7dRRdmCIxBxDNVVhPPgCOkg==
+      - DOCKER_INFLUXDB_INIT_TOKEN=1234
       - DOCKER_KAFKA_INIT_TOKEN=kafka:9092
       - GROUP_ID=save-consumer-group
     depends_on:
